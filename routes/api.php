@@ -101,4 +101,40 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [UserworkexperienceController::class, "update"]);
         Route::get("show/id/{id}", [UserworkexperienceController::class, "show"]);
     });
+    Route::group(['prefix' => 'learninggroups/'], function () {
+        Route::get("show/all", [LearniggroupController::class, "index"]);
+        Route::post("create", [LearniggroupController::class, "store"]);
+        Route::post("update", [LearniggroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearniggroupController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningeventgroups/'], function () {
+        Route::get("show/all", [LearnigeventgroupController::class, "index"]);
+        Route::post("create", [LearnigeventgroupController::class, "store"]);
+        Route::post("update", [LearnigeventgroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearnigeventgroupController::class, "show"]);
+    });
+    Route::group(['prefix' => 'workpositions/'], function () {
+        Route::get("show/all", [WorkpositionController::class, "index"]);
+        Route::post("create", [WorkpositionController::class, "store"]);
+        Route::post("update", [WorkpositionController::class, "update"]);
+        Route::get("show/id/{id}", [WorkpositionController::class, "show"]);
+    });
+    Route::group(['prefix' => 'mentors/'], function () {
+        Route::get("show/all", [MentorController::class, "index"]);
+        Route::post("create", [MentorController::class, "store"]);
+        Route::post("update", [MentorController::class, "update"]);
+        Route::get("show/id/{id}", [MentorController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learnings/'], function () {
+        Route::get("show/all", [LearningController::class, "index"]);
+        Route::post("create", [LearningController::class, "store"]);
+        Route::post("update", [LearningController::class, "update"]);
+        Route::get("show/id/{id}", [LearningController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningdetailss/'], function () {
+        Route::get("show/all", [LearningdetailController::class, "index"]);
+        Route::post("create", [LearningdetailController::class, "store"]);
+        Route::post("update", [LearningdetailController::class, "update"]);
+        Route::get("show/id/{id}", [LearningdetailController::class, "show"]);
+    });
 });

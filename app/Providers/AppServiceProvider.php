@@ -32,6 +32,18 @@ use App\Repositories\UserskillRepository;
 use App\Repositories\Interfaces\UserskillRepositoryInterface;
 use App\Repositories\UserworkexperienceRepository;
 use App\Repositories\Interfaces\UserworkexperienceRepositoryInterface;
+use App\Repositories\LearningGroupRepository;
+use App\Repositories\Interfaces\LearningGroupRepositoryInterface;
+use App\Repositories\LearningeventGroupRepository;
+use App\Repositories\Interfaces\LearningeventGroupRepositoryInterface;
+use App\Repositories\WorkpositionRepository;
+use App\Repositories\Interfaces\WorkpositionRepositoryInterface;
+use App\Repositories\MentorRepository;
+use App\Repositories\Interfaces\MentorRepositoryInterface;
+use App\Repositories\LearningRepository;
+use App\Repositories\Interfaces\LearningRepositoryInterface;
+use App\Repositories\LearningdetailRepository;
+use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -57,7 +69,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserspecialistRepositoryInterface::class, UserspecialistRepository::class);
         $this->app->bind(UserskillRepositoryInterface::class, UserskillRepository::class);
         $this->app->bind(UserworkexperienceRepositoryInterface::class, UserworkexperienceRepository::class);
-        
+        $this->app->bind(LearningGroupRepositoryInterface::class, LearningGroupRepository::class);
+        $this->app->bind(LearningeventGroupRepositoryInterface::class, LearningeventGroupRepository::class);
+        $this->app->bind(WorkpositionRepositoryInterface::class, WorkpositionRepository::class);
+        $this->app->bind(MentorRepositoryInterface::class, MentorRepository::class);
+        $this->app->bind(LearningRepositoryInterface::class, LearningRepository::class);
+        $this->app->bind(LearningdetailRepositoryInterface::class, LearningdetailRepository::class);
+
     }
 
     /**
