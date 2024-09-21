@@ -131,10 +131,28 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [LearningController::class, "update"]);
         Route::get("show/id/{id}", [LearningController::class, "show"]);
     });
-    Route::group(['prefix' => 'learningdetailss/'], function () {
+    Route::group(['prefix' => 'learningdetails/'], function () {
         Route::get("show/all", [LearningdetailController::class, "index"]);
         Route::post("create", [LearningdetailController::class, "store"]);
         Route::post("update", [LearningdetailController::class, "update"]);
         Route::get("show/id/{id}", [LearningdetailController::class, "show"]);
+    });
+    Route::group(['prefix' => 'members/'], function () {
+        Route::get("show/all", [MemberController::class, "index"]);
+        Route::post("create", [MemberController::class, "store"]);
+        Route::post("update", [MemberController::class, "update"]);
+        Route::get("show/id/{id}", [MemberController::class, "show"]);
+    });
+    Route::group(['prefix' => 'membereducations/'], function () {
+        Route::get("show/all", [MembereducationController::class, "index"]);
+        Route::post("create", [MembereducationController::class, "store"]);
+        Route::post("update", [MembereducationController::class, "update"]);
+        Route::get("show/id/{id}", [MembereducationController::class, "show"]);
+    });
+    Route::group(['prefix' => 'memberworkhistories/'], function () {
+        Route::get("show/all", [MemberworkhistorieController::class, "index"]);
+        Route::post("create", [MemberworkhistorieController::class, "store"]);
+        Route::post("update", [MemberworkhistorieController::class, "update"]);
+        Route::get("show/id/{id}", [MemberworkhistorieController::class, "show"]);
     });
 });

@@ -44,6 +44,12 @@ use App\Repositories\LearningRepository;
 use App\Repositories\Interfaces\LearningRepositoryInterface;
 use App\Repositories\LearningdetailRepository;
 use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
+use App\Repositories\MemberRepository;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Repositories\MembereducationRepository;
+use App\Repositories\Interfaces\MembereducationRepositoryInterface;
+use App\Repositories\MemberworkhistorieRepository;
+use App\Repositories\Interfaces\MemberworkhistorieRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -75,6 +81,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MentorRepositoryInterface::class, MentorRepository::class);
         $this->app->bind(LearningRepositoryInterface::class, LearningRepository::class);
         $this->app->bind(LearningdetailRepositoryInterface::class, LearningdetailRepository::class);
+        $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
+        $this->app->bind(MembereducationRepositoryInterface::class, MembereducationRepository::class);
+        $this->app->bind(MemberworkhistorieRepositoryInterface::class, MemberworkhistorieRepository::class);
 
     }
 

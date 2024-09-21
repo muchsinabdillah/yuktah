@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
 
-class LearningdetailController extends Controller
+class MemberController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(LearningdetailRepositoryInterface $repository)
+    public function __construct(MemberRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -26,9 +26,9 @@ class LearningdetailController extends Controller
         try {
             $data =  $this->repository->all(); 
             if($data->count() > 0){ 
-                return $this->success('Learning details retrieved successfully', $data);
+                return $this->success('Members retrieved successfully', $data);
             }else{
-                return $this->error('Learning details Not Found.', [],400);
+                return $this->error('Members Not Found.', [],400);
             } 
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
@@ -51,12 +51,15 @@ class LearningdetailController extends Controller
     {
         //+
         $data = $request->validate([ 
-            'useruuid' =>  'required|string|max:150',
-            'description' => 'required',
-            'type' => 'required',
-            'urldocument' => 'required',
-            'learninguuid' => 'required'
-            
+            // 'useruuid' =>  'required|string|max:150',
+            'name' => 'required',
+            'email' => 'required',
+            'address' => 'required',
+            'dateofbirth' => 'required',
+            'gender' => 'required',
+            'education' => 'required',
+            'typeofmember' => 'required'
+
         ]);
         try { 
             DB::beginTransaction();  
@@ -65,20 +68,23 @@ class LearningdetailController extends Controller
              
             $data = [
                 'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'description'=> $request->description,
-                'type'=> $request->type,
-                'urldocument'=> $request->urldocument,
-                'learninguuid'=> $request->learninguuid
+                // 'useruuid' => $request->useruuid,  
+                'name' => $request->name,
+                'email'=> $request->email,
+                'address'=> $request->address,
+                'dateofbirth'=> $request->dateofbirth,
+                'gender'=> $request->gender,
+                'education'=> $request->education,
+                'typeofmember' => $request->typeofmember
             ];
 
             $execute = $this->repository->store($data);
             DB::commit();
             
             if($execute){
-                return $this->success('Learning details retrieved successfully', $data, 201);
+                return $this->success('Members retrieved successfully', $data, 201);
             }else{
-                return $this->error('Learning details retrieved failure', 400);
+                return $this->error('Members retrieved failure', 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -99,15 +105,18 @@ class LearningdetailController extends Controller
                 $data = [
                     'id' => $execute->id,                 
                     'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,
-                    'description'=> $execute->description,
-                    'type'=> $execute->type,
-                    'urldocument'=> $execute->urldocument,
-                    'learninguuid'=> $execute->learninguuid
+                    // 'useruuid' => $execute->useruuid,  
+                    'name' => $execute->name,
+                    'email'=> $execute->email,
+                    'address'=> $execute->address,
+                    'dateofbirth'=> $execute->dateofbirth,
+                    'gender'=> $execute->gender,
+                    'education'=> $execute->education,
+                    'typeofmember' => $execute->typeofmember 
                 ];
-                return $this->success('Learning details retrieved successfully', $data);
+                return $this->success('Members retrieved successfully', $data);
             }else{
-                return $this->error('Learning details Not Found.', [],400);
+                return $this->error('Members Not Found.', [],400);
             } 
         } catch (\Exception $e) {
 
@@ -131,16 +140,19 @@ class LearningdetailController extends Controller
         //
         $data = $request->validate([ 
             'uuid' =>  'required|string|max:150',
-            'useruuid' =>  'required|string|max:150',
-            'description' => 'required',
-            'type' => 'required',
-            'urldocument' => 'required',
-            'learninguuid' => 'required'
+            // 'useruuid' =>  'required|string|max:150',
+            'name' => 'required',
+            'email' => 'required',
+            'address' => 'required',
+            'dateofbirth' => 'required',
+            'gender' => 'required',
+            'education' => 'required',
+            'typeofmember' => 'required'
         ]);
         //validate
         $execute = $this->repository->findbyid($request->uuid);  
             if($execute->count() < 1){  
-                return $this->error('Learning Group Not Found.', [],400);
+                return $this->error('Member Not Found.', [],400);
             } 
 
         try {
@@ -148,18 +160,21 @@ class LearningdetailController extends Controller
              
             $data = [                
                 'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'description'=> $request->description,
-                'type'=> $request->type,
-                'urldocument'=> $request->urldocument,
-                'learninguuid'=> $request->learninguuid
+                // 'useruuid' => $request->useruuid,  
+                'name' => $request->name,
+                'email'=> $request->email,
+                'address'=> $request->address,
+                'dateofbirth'=> $request->dateofbirth,
+                'gender'=> $request->gender,
+                'education'=> $request->education,
+                'typeofmember' => $request->typeofmember 
             ];
  
                 $executes = $this->repository->update($data);
            
             DB::commit(); 
             if($executes){
-                return $this->success('Learning details updated successfully', []);
+                return $this->success('Members updated successfully', []);
             } 
         } catch (\Exception $e) {
             DB::rollBack();
