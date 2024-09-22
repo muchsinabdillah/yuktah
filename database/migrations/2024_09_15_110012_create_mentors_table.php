@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('workpositionuuid'); 
             $table->date('dateofbirth'); 
             $table->integer('ratingcount')->default(0); 
-            $table->integer('rating', 8, 2)->default(0.00); 
+            $table->integer('rating')->default(0); 
             $table->timestamps();
         });
     }

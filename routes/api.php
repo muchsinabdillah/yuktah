@@ -1,10 +1,32 @@
 <?php
 
-use App\Http\Controllers\Api\CarrierGroupController;
-use App\Http\Controllers\Api\CarrierRequirementController;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Api\MemberController;
+use App\Http\Controllers\Api\MentorController;
+use App\Http\Controllers\Api\CarrierController;
+use App\Http\Controllers\Api\CompanieController;
+use App\Http\Controllers\Api\LearningController;
+use App\Http\Controllers\Api\ProvinceController;
+use App\Http\Controllers\Api\RegencieController;
+use App\Http\Controllers\Api\UserskillController;
+use App\Http\Controllers\Api\CarrierGroupController;
+use App\Http\Controllers\Api\CarrierSkillController;
+use App\Http\Controllers\Api\WorkpositionController;
+use App\Http\Controllers\Api\LearninggroupController;
+use App\Http\Controllers\Api\LearningdetailController;
+use App\Http\Controllers\Api\UserspecialistController;
+use App\Http\Controllers\Api\CarrierEducationController;
+use App\Http\Controllers\Api\CarrierSpecialistController;
+use App\Http\Controllers\Api\CarrierdetailskillController;
+use App\Http\Controllers\Api\CarrierRequirementController;
+use App\Http\Controllers\Api\LearningeventgroupController;
+use App\Http\Controllers\Api\UserworkexperienceController;
+use App\Http\Controllers\Api\CarrierdetailspecialistController;
+use App\Http\Controllers\Api\CarrierIndustrialsectorController;
+use App\Http\Controllers\Api\MembereducationController;
+use App\Http\Controllers\Api\MemberworkhistorieController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -102,16 +124,16 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::get("show/id/{id}", [UserworkexperienceController::class, "show"]);
     });
     Route::group(['prefix' => 'learninggroups/'], function () {
-        Route::get("show/all", [LearniggroupController::class, "index"]);
-        Route::post("create", [LearniggroupController::class, "store"]);
-        Route::post("update", [LearniggroupController::class, "update"]);
-        Route::get("show/id/{id}", [LearniggroupController::class, "show"]);
+        Route::get("show/all",[LearninggroupController::class, "index"]);
+        Route::post("create", [LearninggroupController::class, "store"]);
+        Route::post("update", [LearninggroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearninggroupController::class, "show"]);
     });
     Route::group(['prefix' => 'learningeventgroups/'], function () {
-        Route::get("show/all", [LearnigeventgroupController::class, "index"]);
-        Route::post("create", [LearnigeventgroupController::class, "store"]);
-        Route::post("update", [LearnigeventgroupController::class, "update"]);
-        Route::get("show/id/{id}", [LearnigeventgroupController::class, "show"]);
+        Route::get("show/all", [LearningeventgroupController::class, "index"]);
+        Route::post("create", [LearningeventgroupController::class, "store"]);
+        Route::post("update", [LearningeventgroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearningeventgroupController::class, "show"]);
     });
     Route::group(['prefix' => 'workpositions/'], function () {
         Route::get("show/all", [WorkpositionController::class, "index"]);
