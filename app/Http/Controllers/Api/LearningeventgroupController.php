@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\MentorRepositoryInterface;
+use App\Repositories\Interfaces\LearningeventgroupRepositoryInterface;
 
-class MentorController extends Controller
+class LearningeventgroupController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(MentorRepositoryInterface $repository)
+    public function __construct(LearningeventgroupRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -26,9 +26,9 @@ class MentorController extends Controller
         try {
             $data =  $this->repository->all(); 
             if($data->count() > 0){ 
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Learning Event Groups retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Learning Event Groups Not Found.', [],400);
             } 
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
@@ -52,15 +52,7 @@ class MentorController extends Controller
         //+
         $data = $request->validate([ 
             'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex' => 'required',
-            'address' => 'required',
-            'companyname' => 'required',
-            'workpositionuuid' => 'required',
-            'dateofbirth' => 'required',
-            'ratingcount' => 'required',
-            'rating' => 'required'
-
+            'name' => 'required'
         ]);
         try { 
             DB::beginTransaction();  
@@ -70,23 +62,16 @@ class MentorController extends Controller
             $data = [
                 'uuid' => $uuid,                 
                 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex' => $request->sex,
-                'address' => $request->address,
-                'companyname' => $request->companyname,
-                'workpositionuuid' => $request->workpositionuuid,
-                'dateofbirth' => $request->dateofbirth,
-                'ratingcount' => $request->ratingcount,
-                'rating' => $request->rating
+                'name' => $request->name 
             ];
 
             $execute = $this->repository->store($data);
             DB::commit();
             
             if($execute){
-                return $this->success('Mentors retrieved successfully', $data, 201);
+                return $this->success('Learning Event Groups retrieved successfully', $data, 201);
             }else{
-                return $this->error('Mentors retrieved failure', 400);
+                return $this->error('Learning Event Groups retrieved failure', 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -108,18 +93,11 @@ class MentorController extends Controller
                     'id' => $execute->id,                 
                     'uuid' => $execute->uuid, 
                     'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name, 
-                    'sex'=> $execute->sex,
-                    'address'=> $execute->address,
-                    'companyname'=> $execute->companyname,
-                    'workpositionuuid'=> $execute->workpositionuuid,
-                    'dateofbirth'=> $execute->dateofbirth,
-                    'ratingcount'=> $execute->ratingcount,
-                    'rating'=> $execute->rating
+                    'name' => $execute->name 
                 ];
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Learning Event Groups retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Learning Event Groups Not Found.', [],400);
             } 
         } catch (\Exception $e) {
 
@@ -144,14 +122,7 @@ class MentorController extends Controller
         $data = $request->validate([ 
             'uuid' =>  'required|string|max:150',
             'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex'=> 'required',
-            'address'=> 'required',
-            'companyname'=> 'required',
-            'workpositionuuid'=> 'required',
-            'dateofbirth'=> 'required',
-            'ratingcount'=> 'required',
-            'rating'=> 'required'
+            'name' => 'required'
         ]);
         //validate
         $execute = $this->repository->findbyid($request->uuid);  
@@ -165,21 +136,14 @@ class MentorController extends Controller
             $data = [                
                 'uuid' => $request->uuid,  
                 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex'=> $request->sex,
-                'address'=> $request->address,
-                'companyname'=> $request->companyname,
-                'workpositionuuid'=> $request->workpositionuuid,
-                'dateofbirth'=> $request->dateofbirth,
-                'ratingcount'=> $request->ratingcount,
-                'rating' => $request->rating
+                'name' => $request->name 
             ];
  
                 $executes = $this->repository->update($data);
            
             DB::commit(); 
             if($executes){
-                return $this->success('Mentors updated successfully', []);
+                return $this->success('Learning Event Groups updated successfully', []);
             } 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -195,5 +159,4 @@ class MentorController extends Controller
         //
         
     }
-    //
 }

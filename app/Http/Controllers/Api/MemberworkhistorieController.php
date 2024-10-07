@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\MentorRepositoryInterface;
+use App\Repositories\Interfaces\MemberworkhistorieRepositoryInterface;
 
-class MentorController extends Controller
+class MemberworkhistorieController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(MentorRepositoryInterface $repository)
+    public function __construct(MemberworkhistorieRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -26,9 +26,9 @@ class MentorController extends Controller
         try {
             $data =  $this->repository->all(); 
             if($data->count() > 0){ 
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Member workplaces retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Member workplaces Not Found.', [],400);
             } 
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
@@ -51,15 +51,11 @@ class MentorController extends Controller
     {
         //+
         $data = $request->validate([ 
-            'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex' => 'required',
-            'address' => 'required',
-            'companyname' => 'required',
-            'workpositionuuid' => 'required',
-            'dateofbirth' => 'required',
-            'ratingcount' => 'required',
-            'rating' => 'required'
+            'memberuuid' =>  'required|string|max:150',
+            'workplace' => 'required',
+            'datestart' => 'required',
+            'dateend' => 'required',
+            'active' => 'required'
 
         ]);
         try { 
@@ -68,25 +64,23 @@ class MentorController extends Controller
             
              
             $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex' => $request->sex,
-                'address' => $request->address,
-                'companyname' => $request->companyname,
-                'workpositionuuid' => $request->workpositionuuid,
-                'dateofbirth' => $request->dateofbirth,
-                'ratingcount' => $request->ratingcount,
-                'rating' => $request->rating
+                'uuid' => $uuid, 
+                'memberuuid'=> $request->memberuuid,
+                'workplace'=> $request->workplace,
+                'datestart'=> $request->datestart,
+                'dateend'=> $request->dateend,
+                'active'=> $request->active
+               
+                
             ];
 
             $execute = $this->repository->store($data);
             DB::commit();
             
             if($execute){
-                return $this->success('Mentors retrieved successfully', $data, 201);
+                return $this->success('Member workplaces retrieved successfully', $data, 201);
             }else{
-                return $this->error('Mentors retrieved failure', 400);
+                return $this->error('Member workplaces retrieved failure', 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -107,19 +101,17 @@ class MentorController extends Controller
                 $data = [
                     'id' => $execute->id,                 
                     'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name, 
-                    'sex'=> $execute->sex,
-                    'address'=> $execute->address,
-                    'companyname'=> $execute->companyname,
-                    'workpositionuuid'=> $execute->workpositionuuid,
-                    'dateofbirth'=> $execute->dateofbirth,
-                    'ratingcount'=> $execute->ratingcount,
-                    'rating'=> $execute->rating
+                    'memberuuid'=> $execute->memberuuid,
+                    'workplace'=> $execute->workplace,
+                    'datestart'=> $execute->datestart,
+                    'dateend'=> $execute->dateend,
+                    'active'=> $execute->active
+                    
+                    
                 ];
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Member workplaces retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Member workplaces Not Found.', [],400);
             } 
         } catch (\Exception $e) {
 
@@ -143,20 +135,16 @@ class MentorController extends Controller
         //
         $data = $request->validate([ 
             'uuid' =>  'required|string|max:150',
-            'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex'=> 'required',
-            'address'=> 'required',
-            'companyname'=> 'required',
-            'workpositionuuid'=> 'required',
-            'dateofbirth'=> 'required',
-            'ratingcount'=> 'required',
-            'rating'=> 'required'
+            'memberuuid' =>  'required|string|max:150',
+            'workplace' => 'required',
+            'datestart' => 'required',
+            'dateend' => 'required',
+            'active' => 'required'
         ]);
         //validate
         $execute = $this->repository->findbyid($request->uuid);  
             if($execute->count() < 1){  
-                return $this->error('Learning Group Not Found.', [],400);
+                return $this->error('Member workplaces Not Found.', [],400);
             } 
 
         try {
@@ -164,22 +152,18 @@ class MentorController extends Controller
              
             $data = [                
                 'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex'=> $request->sex,
-                'address'=> $request->address,
-                'companyname'=> $request->companyname,
-                'workpositionuuid'=> $request->workpositionuuid,
-                'dateofbirth'=> $request->dateofbirth,
-                'ratingcount'=> $request->ratingcount,
-                'rating' => $request->rating
+                'memberuuid'=> $request->memberuuid,
+                'workplace'=> $request->workplace,
+                'datestart'=> $request->datestart,
+                'dateend'=> $request->dateend,
+                'active'=> $request->active
             ];
  
                 $executes = $this->repository->update($data);
            
             DB::commit(); 
             if($executes){
-                return $this->success('Mentors updated successfully', []);
+                return $this->success('Member workplaces updated successfully', []);
             } 
         } catch (\Exception $e) {
             DB::rollBack();

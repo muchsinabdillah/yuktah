@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\MentorRepositoryInterface;
+use App\Repositories\Interfaces\LearningRepositoryInterface;
 
-class MentorController extends Controller
+class LearningController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(MentorRepositoryInterface $repository)
+    public function __construct(LearningRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -26,9 +26,9 @@ class MentorController extends Controller
         try {
             $data =  $this->repository->all(); 
             if($data->count() > 0){ 
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Learnings retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Learnings Not Found.', [],400);
             } 
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
@@ -52,14 +52,18 @@ class MentorController extends Controller
         //+
         $data = $request->validate([ 
             'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex' => 'required',
-            'address' => 'required',
-            'companyname' => 'required',
-            'workpositionuuid' => 'required',
-            'dateofbirth' => 'required',
+            'title' => 'required',
+            'shortdescription' => 'required',
+            'studentcount' => 'required',
             'ratingcount' => 'required',
-            'rating' => 'required'
+            'rating' => 'required',
+            'mentoruuid' => 'required',
+            'learndetail' => 'required',
+            'benefitcourse' => 'required',
+            'requirment' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'status' => 'required'
 
         ]);
         try { 
@@ -70,23 +74,27 @@ class MentorController extends Controller
             $data = [
                 'uuid' => $uuid,                 
                 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex' => $request->sex,
-                'address' => $request->address,
-                'companyname' => $request->companyname,
-                'workpositionuuid' => $request->workpositionuuid,
-                'dateofbirth' => $request->dateofbirth,
-                'ratingcount' => $request->ratingcount,
-                'rating' => $request->rating
+                'title'=> $request->title,
+                'shortdescription'=> $request->shortdescription,
+                'studentcount'=> $request->studentcount,
+                'ratingcount'=> $request->ratingcount,
+                'rating'=> $request->rating,
+                'mentoruuid'=> $request->mentoruuid,
+                'learndetail'=> $request->learndetail,
+                'benefitcourse'=> $request->benefitcourse,
+                'requirment'=> $request->requirment,
+                'description'=> $request->description,
+                'price'=> $request->price,
+                'status'=> $request->status
             ];
 
             $execute = $this->repository->store($data);
             DB::commit();
             
             if($execute){
-                return $this->success('Mentors retrieved successfully', $data, 201);
+                return $this->success('Learnings retrieved successfully', $data, 201);
             }else{
-                return $this->error('Mentors retrieved failure', 400);
+                return $this->error('Learnings retrieved failure', 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -107,19 +115,24 @@ class MentorController extends Controller
                 $data = [
                     'id' => $execute->id,                 
                     'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name, 
-                    'sex'=> $execute->sex,
-                    'address'=> $execute->address,
-                    'companyname'=> $execute->companyname,
-                    'workpositionuuid'=> $execute->workpositionuuid,
-                    'dateofbirth'=> $execute->dateofbirth,
+                    'useruuid' => $execute->useruuid,
+                    'title'=> $execute->title,
+                    'shortdescription'=> $execute->shortdescription,
+                    'studentcount'=> $execute->studentcount,
                     'ratingcount'=> $execute->ratingcount,
-                    'rating'=> $execute->rating
+                    'rating'=> $execute->rating,
+                    'mentoruuid'=> $execute->mentoruuid,
+                    'learndetail'=> $execute->learndetail,
+                    'benefitcourse'=> $execute->benefitcourse,
+                    'requirment'=> $execute->requirment,
+                    'description'=> $execute->description,
+                    'price'=> $execute->price,
+                    'status'=> $execute->status  
+                    
                 ];
-                return $this->success('Mentors retrieved successfully', $data);
+                return $this->success('Learnings retrieved successfully', $data);
             }else{
-                return $this->error('Mentors Not Found.', [],400);
+                return $this->error('Learnings Not Found.', [],400);
             } 
         } catch (\Exception $e) {
 
@@ -144,14 +157,18 @@ class MentorController extends Controller
         $data = $request->validate([ 
             'uuid' =>  'required|string|max:150',
             'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'sex'=> 'required',
-            'address'=> 'required',
-            'companyname'=> 'required',
-            'workpositionuuid'=> 'required',
-            'dateofbirth'=> 'required',
-            'ratingcount'=> 'required',
-            'rating'=> 'required'
+            'title' => 'required',
+            'shortdescription' => 'required',
+            'studentcount' => 'required',
+            'ratingcount' => 'required',
+            'rating' => 'required',
+            'mentoruuid' => 'required',
+            'learndetail' => 'required',
+            'benefitcourse' => 'required',
+            'requirment' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'status' => 'required'
         ]);
         //validate
         $execute = $this->repository->findbyid($request->uuid);  
@@ -165,21 +182,25 @@ class MentorController extends Controller
             $data = [                
                 'uuid' => $request->uuid,  
                 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'sex'=> $request->sex,
-                'address'=> $request->address,
-                'companyname'=> $request->companyname,
-                'workpositionuuid'=> $request->workpositionuuid,
-                'dateofbirth'=> $request->dateofbirth,
+                'title'=> $request->title,
+                'shortdescription'=> $request->shortdescription,
+                'studentcount'=> $request->studentcount,
                 'ratingcount'=> $request->ratingcount,
-                'rating' => $request->rating
+                'rating'=> $request->rating,
+                'mentoruuid'=> $request->mentoruuid,
+                'learndetail'=> $request->learndetail,
+                'benefitcourse'=> $request->benefitcourse,
+                'requirment'=> $request->requirment,
+                'description'=> $request->description,
+                'price'=> $request->price,
+                'status'=> $request->status
             ];
  
                 $executes = $this->repository->update($data);
            
             DB::commit(); 
             if($executes){
-                return $this->success('Mentors updated successfully', []);
+                return $this->success('Learnings updated successfully', []);
             } 
         } catch (\Exception $e) {
             DB::rollBack();
