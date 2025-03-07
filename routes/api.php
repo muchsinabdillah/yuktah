@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,12 +29,15 @@ use App\Http\Controllers\Api\CarrierdetailspecialistController;
 use App\Http\Controllers\Api\CarrierIndustrialsectorController;
 use App\Http\Controllers\Api\MembereducationController;
 use App\Http\Controllers\Api\MemberworkhistorieController;
+use App\Http\Controllers\api\RatingAppDetailController;
+use App\Http\Controllers\api\RatingLessonDetailController;
+use App\Http\Controllers\api\RatingMentorDetailController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::group(['prefix' => 'masterdata/'], function () {
+Route::middleware('auth:sanctum')->prefix('masterdata')->group(function (){
     Route::group(['prefix' => 'carriergroups/'], function () {
         Route::get("show/all", [CarrierGroupController::class, "index"]);
         Route::post("create", [CarrierGroupController::class, "store"]);
@@ -69,12 +74,7 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [CarrierSkillController::class, "update"]);
         Route::get("show/id/{id}", [CarrierSkillController::class, "show"]);
     });
-    Route::group(['prefix' => 'carriers/'], function () {
-        Route::get("show/all", [CarrierController::class, "index"]);
-        Route::post("create", [CarrierController::class, "store"]);
-        Route::post("update", [CarrierController::class, "update"]);
-        Route::get("show/id/{id}", [CarrierController::class, "show"]);
-    });
+    
     Route::group(['prefix' => 'companies/'], function () {
         Route::get("show/all", [CompanieController::class, "index"]);
         Route::post("create", [CompanieController::class, "store"]);
@@ -105,6 +105,73 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [CarrierdetailskillController::class, "update"]);
         Route::get("show/id/{id}", [CarrierdetailskillController::class, "show"]);
     });
+    
+    Route::group(['prefix' => 'learninggroups/'], function () {
+        Route::get("show/all",[LearninggroupController::class, "index"]);
+        Route::post("create", [LearninggroupController::class, "store"]);
+        Route::post("update", [LearninggroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearninggroupController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningeventgroups/'], function () {
+        Route::get("show/all", [LearningeventgroupController::class, "index"]);
+        Route::post("create", [LearningeventgroupController::class, "store"]);
+        Route::post("update", [LearningeventgroupController::class, "update"]);
+        Route::get("show/id/{id}", [LearningeventgroupController::class, "show"]);
+    });
+    
+    Route::group(['prefix' => 'workpositions/'], function () {
+        Route::get("show/all", [WorkpositionController::class, "index"]);
+        Route::post("create", [WorkpositionController::class, "store"]);
+        Route::post("update", [WorkpositionController::class, "update"]);
+        Route::get("show/id/{id}", [WorkpositionController::class, "show"]);
+    });
+});
+   
+     
+// transaction
+
+Route::group(['prefix' => 'auth/'], function () {
+    Route::post("login", [LoginController::class])->middleware('guest');
+    Route::post("logout", [LogoutController::class])->middleware('guest');
+    Route::post("updatepassword", [MemberController::class, "edit"]); 
+});
+
+Route::group(['prefix' => 'mentors/'], function () {
+    Route::get("show/all", [MentorController::class, "index"]);
+    Route::post("create", [MentorController::class, "store"]);
+    Route::post("update", [MentorController::class, "update"]);
+    Route::get("show/id/{id}", [MentorController::class, "show"]);
+});
+
+Route::group(['prefix' => 'learnings/'], function () {
+    Route::get("show/all", [LearningController::class, "index"]);
+    Route::post("create", [LearningController::class, "store"]);
+    Route::post("update", [LearningController::class, "update"]);
+    Route::get("show/id/{id}", [LearningController::class, "show"]);
+});
+
+Route::group(['prefix' => 'learningdetails/'], function () {
+    Route::get("show/all", [LearningdetailController::class, "index"]);
+    Route::post("create", [LearningdetailController::class, "store"]);
+    Route::post("update", [LearningdetailController::class, "update"]);
+    Route::get("show/id/{id}", [LearningdetailController::class, "show"]);
+});
+
+// sini
+Route::group(['prefix' => 'carriers/'], function () {
+    Route::get("show/all", [CarrierController::class, "index"]);
+    Route::post("create", [CarrierController::class, "store"]);
+    Route::post("update", [CarrierController::class, "update"]);
+    Route::get("show/id/{id}", [CarrierController::class, "show"]);
+});
+
+Route::group(['prefix' => 'membership/'], function () {
+   Route::group(['prefix' => 'users/'], function () {
+        Route::get("show/all", [MemberController::class, "index"]);
+        Route::post("create", [MemberController::class, "store"]); 
+        Route::get("show/id/{id}", [MemberController::class, "show"]);
+   });
+
     Route::group(['prefix' => 'userspecialists/'], function () {
         Route::get("show/all", [UserspecialistController::class, "index"]);
         Route::post("create", [UserspecialistController::class, "store"]);
@@ -123,48 +190,7 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [UserworkexperienceController::class, "update"]);
         Route::get("show/id/{id}", [UserworkexperienceController::class, "show"]);
     });
-    Route::group(['prefix' => 'learninggroups/'], function () {
-        Route::get("show/all",[LearninggroupController::class, "index"]);
-        Route::post("create", [LearninggroupController::class, "store"]);
-        Route::post("update", [LearninggroupController::class, "update"]);
-        Route::get("show/id/{id}", [LearninggroupController::class, "show"]);
-    });
-    Route::group(['prefix' => 'learningeventgroups/'], function () {
-        Route::get("show/all", [LearningeventgroupController::class, "index"]);
-        Route::post("create", [LearningeventgroupController::class, "store"]);
-        Route::post("update", [LearningeventgroupController::class, "update"]);
-        Route::get("show/id/{id}", [LearningeventgroupController::class, "show"]);
-    });
-    Route::group(['prefix' => 'workpositions/'], function () {
-        Route::get("show/all", [WorkpositionController::class, "index"]);
-        Route::post("create", [WorkpositionController::class, "store"]);
-        Route::post("update", [WorkpositionController::class, "update"]);
-        Route::get("show/id/{id}", [WorkpositionController::class, "show"]);
-    });
-    Route::group(['prefix' => 'mentors/'], function () {
-        Route::get("show/all", [MentorController::class, "index"]);
-        Route::post("create", [MentorController::class, "store"]);
-        Route::post("update", [MentorController::class, "update"]);
-        Route::get("show/id/{id}", [MentorController::class, "show"]);
-    });
-    Route::group(['prefix' => 'learnings/'], function () {
-        Route::get("show/all", [LearningController::class, "index"]);
-        Route::post("create", [LearningController::class, "store"]);
-        Route::post("update", [LearningController::class, "update"]);
-        Route::get("show/id/{id}", [LearningController::class, "show"]);
-    });
-    Route::group(['prefix' => 'learningdetails/'], function () {
-        Route::get("show/all", [LearningdetailController::class, "index"]);
-        Route::post("create", [LearningdetailController::class, "store"]);
-        Route::post("update", [LearningdetailController::class, "update"]);
-        Route::get("show/id/{id}", [LearningdetailController::class, "show"]);
-    });
-    Route::group(['prefix' => 'members/'], function () {
-        Route::get("show/all", [MemberController::class, "index"]);
-        Route::post("create", [MemberController::class, "store"]);
-        Route::post("update", [MemberController::class, "update"]);
-        Route::get("show/id/{id}", [MemberController::class, "show"]);
-    });
+
     Route::group(['prefix' => 'membereducations/'], function () {
         Route::get("show/all", [MembereducationController::class, "index"]);
         Route::post("create", [MembereducationController::class, "store"]);
@@ -177,4 +203,29 @@ Route::group(['prefix' => 'masterdata/'], function () {
         Route::post("update", [MemberworkhistorieController::class, "update"]);
         Route::get("show/id/{id}", [MemberworkhistorieController::class, "show"]);
     });
+});
+// belum jadi
+Route::group(['prefix' => 'rating/'], function () {
+
+    Route::group(['prefix' => 'app/'], function () { 
+            Route::get("show/all", [RatingAppDetailController::class, "index"]);
+            Route::post("create", [RatingAppDetailController::class, "store"]);
+            Route::post("update", [RatingAppDetailController::class, "update"]);
+            Route::get("show/id/{id}", [RatingAppDetailController::class, "show"]);
+    });
+
+    Route::group(['prefix' => 'mentor/'], function () { 
+            Route::get("show/all", [RatingMentorDetailController::class, "index"]);
+            Route::post("create", [RatingMentorDetailController::class, "store"]);
+            Route::post("update", [RatingMentorDetailController::class, "update"]);
+            Route::get("show/id/{id}", [RatingMentorDetailController::class, "show"]);
+    });
+
+    Route::group(['prefix' => 'lesson/'], function () { 
+            Route::get("show/all", [RatingLessonDetailController::class, "index"]);
+            Route::post("create", [RatingLessonDetailController::class, "store"]);
+            Route::post("update", [RatingLessonDetailController::class, "update"]);
+            Route::get("show/id/{id}", [RatingLessonDetailController::class, "show"]);
+    });
+    
 });

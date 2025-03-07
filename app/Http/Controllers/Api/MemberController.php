@@ -50,41 +50,41 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         //+
-        $data = $request->validate([ 
+        
+        $request->validate([ 
             // 'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
             'email' => 'required',
-            'address' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
             'dateofbirth' => 'required',
             'gender' => 'required',
-            'education' => 'required',
-            'typeofmember' => 'required'
-
+            'referalcode' => 'required',
+            'mobilephone' => 'required',
+            'domicilieprovince' => 'required',
+            'domicilieprovincename' => 'required',
+            'domicilieregency' => 'required',
+            'domicilieregencyname' => 'required',
+            'domicilieaddress' => 'required', 
+            'workoutdomicilie' => 'required',
+            'typeofmember' => 'required',
+            'password' => 'required' 
         ]);
+
         try { 
             DB::beginTransaction();  
             $uuid = Uuid::uuid4();
             
-             
-            $data = [
-                'uuid' => $uuid,                 
-                // 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'email'=> $request->email,
-                'address'=> $request->address,
-                'dateofbirth'=> $request->dateofbirth,
-                'gender'=> $request->gender,
-                'education'=> $request->education,
-                'typeofmember' => $request->typeofmember
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid; 
+            $execute = $this->repository->store($dataArray);
 
-            $execute = $this->repository->store($data);
             DB::commit();
             
             if($execute){
-                return $this->success('Members retrieved successfully', $data, 201);
+                return $this->success('Members retrieved successfully', $dataArray, 201);
             }else{
-                return $this->error('Members retrieved failure', 400);
+                return $this->error('Members retrieved failure' , 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -101,20 +101,8 @@ class MemberController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    // 'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name,
-                    'email'=> $execute->email,
-                    'address'=> $execute->address,
-                    'dateofbirth'=> $execute->dateofbirth,
-                    'gender'=> $execute->gender,
-                    'education'=> $execute->education,
-                    'typeofmember' => $execute->typeofmember 
-                ];
-                return $this->success('Members retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Members retrieved successfully', $execute);
             }else{
                 return $this->error('Members Not Found.', [],400);
             } 
@@ -127,9 +115,35 @@ class MemberController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request)
     {
         //
+        $request->validate([
+            'password' => 'required|confirmed|min:6',
+            'uuid' => 'required' 
+        ]);
+
+        $execute = $this->repository->findbyid($request->uuid);  
+        if($execute->count() < 1){  
+            return $this->error('Member id Not Found.', [],400);
+        } 
+       
+        try {
+            DB::beginTransaction();  
+                $dataArray = []; 
+                $dataArray = $request->toArray();  
+                $executes = $this->repository->updates($dataArray);
+                 
+            DB::commit(); 
+            if($executes){
+                return $this->success('Members password updated successfully', []);
+            } 
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
+
+
     }
 
     /**
@@ -138,18 +152,17 @@ class MemberController extends Controller
     public function update(Request $request)
     {
         //
-        $data = $request->validate([ 
-            'uuid' =>  'required|string|max:150',
-            // 'useruuid' =>  'required|string|max:150',
-            'name' => 'required',
-            'email' => 'required',
-            'address' => 'required',
-            'dateofbirth' => 'required',
-            'gender' => 'required',
-            'education' => 'required',
-            'typeofmember' => 'required'
-        ]);
+        // $request->validate([ 
+        //     'uuid' =>  'required|string|max:150', 
+        //     'name' => 'required', 
+        //     'address' => 'required',
+        //     'dateofbirth' => 'required',
+        //     'gender' => 'required',
+        //     'education' => 'required',
+        //     'typeofmember' => 'required'
+        // ]);
         //validate
+        
         $execute = $this->repository->findbyid($request->uuid);  
             if($execute->count() < 1){  
                 return $this->error('Member Not Found.', [],400);
@@ -157,21 +170,9 @@ class MemberController extends Controller
 
         try {
             DB::beginTransaction();  
-             
-            $data = [                
-                'uuid' => $request->uuid,  
-                // 'useruuid' => $request->useruuid,  
-                'name' => $request->name,
-                'email'=> $request->email,
-                'address'=> $request->address,
-                'dateofbirth'=> $request->dateofbirth,
-                'gender'=> $request->gender,
-                'education'=> $request->education,
-                'typeofmember' => $request->typeofmember 
-            ];
- 
-                $executes = $this->repository->update($data);
-           
+                $dataArray = []; 
+                $dataArray = $request->toArray();  
+                $executes = $this->repository->update($dataArray);
             DB::commit(); 
             if($executes){
                 return $this->success('Members updated successfully', []);

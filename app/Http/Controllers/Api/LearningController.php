@@ -8,14 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\LearningRepositoryInterface;
+use App\Repositories\Interfaces\MentorRepositoryInterface;
 
 class LearningController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(LearningRepositoryInterface $repository)
+    private $mentorRepsitory;
+    private $userRepository;
+    public function __construct(LearningRepositoryInterface $repository,
+                                MentorRepositoryInterface $mentorRepsitory)
     {
         $this->repository = $repository;
+        $this->mentorRepsitory = $mentorRepsitory;
     }
     /**
      * Display a listing of the resource.
@@ -50,8 +55,7 @@ class LearningController extends Controller
     public function store(Request $request)
     {
         //+
-        $data = $request->validate([ 
-            'useruuid' =>  'required|string|max:150',
+        $data = $request->validate([  
             'title' => 'required',
             'shortdescription' => 'required',
             'studentcount' => 'required',
@@ -66,33 +70,22 @@ class LearningController extends Controller
             'status' => 'required'
 
         ]);
+        $mentor = $this->mentorRepsitory->findbyid($request->mentoruuid);  
+        if($mentor->count() < 1){  
+            return $this->error('Mentor Not Found.', [],400);
+        }
+
         try { 
             DB::beginTransaction();  
-            $uuid = Uuid::uuid4();
-            
-             
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'title'=> $request->title,
-                'shortdescription'=> $request->shortdescription,
-                'studentcount'=> $request->studentcount,
-                'ratingcount'=> $request->ratingcount,
-                'rating'=> $request->rating,
-                'mentoruuid'=> $request->mentoruuid,
-                'learndetail'=> $request->learndetail,
-                'benefitcourse'=> $request->benefitcourse,
-                'requirment'=> $request->requirment,
-                'description'=> $request->description,
-                'price'=> $request->price,
-                'status'=> $request->status
-            ];
-
-            $execute = $this->repository->store($data);
+            $uuid = Uuid::uuid4(); 
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;  
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Learnings retrieved successfully', $data, 201);
+                return $this->success('Learnings retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Learnings retrieved failure', 400);
             }
@@ -111,26 +104,8 @@ class LearningController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,
-                    'title'=> $execute->title,
-                    'shortdescription'=> $execute->shortdescription,
-                    'studentcount'=> $execute->studentcount,
-                    'ratingcount'=> $execute->ratingcount,
-                    'rating'=> $execute->rating,
-                    'mentoruuid'=> $execute->mentoruuid,
-                    'learndetail'=> $execute->learndetail,
-                    'benefitcourse'=> $execute->benefitcourse,
-                    'requirment'=> $execute->requirment,
-                    'description'=> $execute->description,
-                    'price'=> $execute->price,
-                    'status'=> $execute->status  
-                    
-                ];
-                return $this->success('Learnings retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Learnings retrieved successfully', $execute);
             }else{
                 return $this->error('Learnings Not Found.', [],400);
             } 
@@ -154,9 +129,8 @@ class LearningController extends Controller
     public function update(Request $request)
     {
         //
-        $data = $request->validate([ 
-            'uuid' =>  'required|string|max:150',
-            'useruuid' =>  'required|string|max:150',
+        $request->validate([ 
+            'uuid' =>  'required|string|max:150', 
             'title' => 'required',
             'shortdescription' => 'required',
             'studentcount' => 'required',
@@ -173,30 +147,20 @@ class LearningController extends Controller
         //validate
         $execute = $this->repository->findbyid($request->uuid);  
             if($execute->count() < 1){  
-                return $this->error('Learning Group Not Found.', [],400);
+                return $this->error('Learning Not Found.', [],400);
             } 
+
+        $mentor = $this->mentorRepsitory->findbyid($request->mentoruuid);  
+            if($mentor->count() < 1){  
+                return $this->error('Mentor Not Found.', [],400);
+            }
 
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'title'=> $request->title,
-                'shortdescription'=> $request->shortdescription,
-                'studentcount'=> $request->studentcount,
-                'ratingcount'=> $request->ratingcount,
-                'rating'=> $request->rating,
-                'mentoruuid'=> $request->mentoruuid,
-                'learndetail'=> $request->learndetail,
-                'benefitcourse'=> $request->benefitcourse,
-                'requirment'=> $request->requirment,
-                'description'=> $request->description,
-                'price'=> $request->price,
-                'status'=> $request->status
-            ];
- 
-                $executes = $this->repository->update($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

@@ -12,7 +12,7 @@ class CarrierdetailskillRepository implements CarrierdetailskillRepositoryInterf
 
     public function all()
     {
-        return carrierdetailskill::where('carrierskilluuid','1')->latest()->paginate(10);
+        return carrierdetailskill::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class CarrierdetailskillRepository implements CarrierdetailskillRepositoryInterf
 
     public function findbyid($id)
     {
-        return carrierdetailskill::where('uuid',$id)->where('name','1')->get();
+        return carrierdetailskill::where('uuid',$id)->get();
     }
 
      

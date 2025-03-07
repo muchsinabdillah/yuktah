@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 
 Route::prefix('auth')->group(function () {
-    Route::post('/login', LoginController::class);
+    Route::post('/login', LoginController::class)->middleware('guest');
     Route::post('/logout', LogoutController::class);
     Route::post('/register', RegisterController::class);
 });

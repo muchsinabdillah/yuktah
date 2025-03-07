@@ -9,14 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\CarrierRequirementRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
 
 class CarrierRequirementController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(CarrierRequirementRepositoryInterface $repository)
+    private $userRepository;
+    public function __construct(CarrierRequirementRepositoryInterface $repository,
+                                MemberRepositoryInterface $userRepository)
     {
         $this->repository = $repository;
+        $this->userRepository = $userRepository;
     }
     /**
      * Display a listing of the resource.
@@ -59,14 +63,16 @@ class CarrierRequirementController extends Controller
             DB::beginTransaction();  
             $uuid = Uuid::uuid4();
             
-             
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
+            $execute = $this->userRepository->findbyid($request->useruuid);  
+            if($execute->count() < 1){  
+                return $this->error('Member Not Found.', [],400);
+            } 
 
-            $execute = $this->repository->store($data);
+            
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid; 
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
@@ -88,15 +94,8 @@ class CarrierRequirementController extends Controller
         //
         try {  
             $execute = $this->repository->findbyid($id)->first();
-             
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name 
-                ];
-                return $this->success('Carrier Requirements retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Carrier Requirements retrieved successfully', $execute);
             }else{
                 return $this->error('Carrier Requirements Not Found.', [],400);
             } 
@@ -134,13 +133,10 @@ class CarrierRequirementController extends Controller
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
- 
-                $executes = $this->repository->update($data);
+             
+                $dataArray = []; 
+                $dataArray = $request->toArray();  
+                $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

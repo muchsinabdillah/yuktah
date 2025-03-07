@@ -60,17 +60,15 @@ class CarrierSkillController extends Controller
             $uuid = Uuid::uuid4();
             
              
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;  
 
-            $execute = $this->repository->store($data);
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Carrier Skills retrieved successfully', $data, 201);
+                return $this->success('Carrier Skills retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Carrier Skills retrieved failure', 400);
             }
@@ -89,14 +87,8 @@ class CarrierSkillController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name 
-                ];
-                return $this->success('Carrier Skills retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Carrier Skills retrieved successfully', $execute);
             }else{
                 return $this->error('Carrier Skills Not Found.', [],400);
             } 
@@ -134,13 +126,9 @@ class CarrierSkillController extends Controller
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
- 
-                $executes = $this->repository->update($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

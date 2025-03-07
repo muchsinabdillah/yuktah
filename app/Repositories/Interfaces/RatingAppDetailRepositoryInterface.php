@@ -1,13 +1,12 @@
 <?php
 namespace App\Repositories\Interfaces;
 
-Interface MemberRepositoryInterface{
+Interface RatingAppDetailRepositoryInterface{
     
     public function all();
     public function Store($data);
     public function findbyid($id);
-    public function update($data);     
-    public function updates($data);     
+    public function update($data);   
     
     
 }

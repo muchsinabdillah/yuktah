@@ -58,19 +58,14 @@ class CarrierEducationController extends Controller
         try { 
             DB::beginTransaction();  
             $uuid = Uuid::uuid4();
-            
-             
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
-
-            $execute = $this->repository->store($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid; 
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Carrier Educations retrieved successfully', $data, 201);
+                return $this->success('Carrier Educations retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Carrier Educations retrieved failure', 400);
             }

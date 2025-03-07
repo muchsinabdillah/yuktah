@@ -12,7 +12,7 @@ class CarrierRequirementRepository implements CarrierRequirementRepositoryInterf
 
     public function all()
     {
-        return carrierrequirement::where('name','alim')->latest()->paginate(10);
+        return carrierrequirement::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class CarrierRequirementRepository implements CarrierRequirementRepositoryInterf
 
     public function findbyid($id)
     {
-        return carrierrequirement::where('uuid',$id)->where('name','alim')->get();
+        return carrierrequirement::where('uuid',$id)->get();
     }
 
      

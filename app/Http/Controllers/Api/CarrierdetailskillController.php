@@ -60,17 +60,15 @@ class CarrierdetailskillController extends Controller
             $uuid = Uuid::uuid4();
             
              
-            $data = [
-                'uuid' => $uuid,                 
-                'carrieruuid' => $request->carrieruuid,  
-                'carrierskilluuid' => $request->carrierskilluuid 
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;  
 
-            $execute = $this->repository->store($data);
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Carrier detail skills retrieved successfully', $data, 201);
+                return $this->success('Carrier detail skills retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Carrier detail skills retrieved failure', 400);
             }

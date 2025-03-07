@@ -12,7 +12,7 @@ class CarrierEducationRepository implements CarrierEducationRepositoryInterface
 
     public function all()
     {
-        return carriereducation::where('name','alim')->latest()->paginate(10);
+        return carriereducation::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class CarrierEducationRepository implements CarrierEducationRepositoryInterface
 
     public function findbyid($id)
     {
-        return carriereducation::where('uuid',$id)->where('name','alim')->get();
+        return carriereducation::where('uuid',$id)->get();
     }
 
      

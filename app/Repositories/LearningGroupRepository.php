@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Repositories;
-
-use App\Models\aactivities;
-use App\Models\aprofile;
+ 
 use App\Models\learninggroup;
 use App\Repositories\Interfaces\LearningGroupRepositoryInterface;
 
@@ -12,7 +10,7 @@ class LearningGroupRepository implements LearningGroupRepositoryInterface
 
     public function all()
     {
-        return learninggroup::where('name','1')->latest()->paginate(10);
+        return learninggroup::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +20,7 @@ class LearningGroupRepository implements LearningGroupRepositoryInterface
 
     public function findbyid($id)
     {
-        return learninggroup::where('uuid',$id)->where('name','1')->get();
+        return learninggroup::where('uuid',$id)->get();
     }
 
      

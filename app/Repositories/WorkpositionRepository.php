@@ -12,7 +12,7 @@ class WorkpositionRepository implements WorkpositionRepositoryInterface
 
     public function all()
     {
-        return workposition::where('name','tes')->latest()->paginate(10);
+        return workposition::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class WorkpositionRepository implements WorkpositionRepositoryInterface
 
     public function findbyid($id)
     {
-        return workposition::where('uuid',$id)->where('name','tes')->get();
+        return workposition::where('uuid',$id)->get();
     }
 
      

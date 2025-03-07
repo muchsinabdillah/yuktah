@@ -19,7 +19,7 @@ class WorkpositionController extends Controller
         $this->repository = $repository;
     }
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.a
      */
     public function index()
     {
@@ -60,17 +60,15 @@ class WorkpositionController extends Controller
             $uuid = Uuid::uuid4();
             
              
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid; 
 
-            $execute = $this->repository->store($data);
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Work Positions retrieved successfully', $data, 201);
+                return $this->success('Work Positions retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Work Positions retrieved failure', 400);
             }
@@ -89,14 +87,8 @@ class WorkpositionController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name 
-                ];
-                return $this->success('Work Positions retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Work Positions retrieved successfully', $execute);
             }else{
                 return $this->error('Work Positions Not Found.', [],400);
             } 
@@ -134,13 +126,10 @@ class WorkpositionController extends Controller
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
  
-                $executes = $this->repository->update($data);
+                $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

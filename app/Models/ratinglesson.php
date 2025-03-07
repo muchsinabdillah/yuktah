@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class member extends Model
+class ratinglesson extends Model
 {
     use HasFactory;
-    protected $table = "members";
+    protected $table = "ratinglessons";
 
     /**
      * The attributes that are mass assignable.
@@ -17,14 +17,10 @@ class member extends Model
      */
     protected $fillable = [
         'uuid',     
-        // 'useruuid',
-        'name',
-        'email',
-        'address',
-        'dateofbirth',
-        'gender',
+        'memberuuid',
         'education',
-        'typeofmember'
+        'graduationdate',
+        'active'
     ];
     
     public $incrementing = true;

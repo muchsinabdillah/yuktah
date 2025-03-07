@@ -12,7 +12,7 @@ class CarrierIndustrialsectorRepository implements CarrierIndustrialsectorReposi
 
     public function all()
     {
-        return carrierindustrialsector::where('name','alim')->latest()->paginate(10);
+        return carrierindustrialsector::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class CarrierIndustrialsectorRepository implements CarrierIndustrialsectorReposi
 
     public function findbyid($id)
     {
-        return carrierindustrialsector::where('uuid',$id)->where('name','alim')->get();
+        return carrierindustrialsector::where('uuid',$id)->get();
     }
 
      

@@ -8,14 +8,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
+use App\Repositories\Interfaces\LearningRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
 
 class LearningdetailController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(LearningdetailRepositoryInterface $repository)
+    private $learningRepository;
+    private $memberRepository;
+    public function __construct(
+            LearningdetailRepositoryInterface $repository,
+            LearningRepositoryInterface $learningRepository,
+            MemberRepositoryInterface $memberRepository
+        )
     {
         $this->repository = $repository;
+        $this->learningRepository = $learningRepository;
+        $this->memberRepository = $memberRepository;
     }
     /**
      * Display a listing of the resource.
@@ -50,7 +60,7 @@ class LearningdetailController extends Controller
     public function store(Request $request)
     {
         //+
-        $data = $request->validate([ 
+        $request->validate([ 
             'useruuid' =>  'required|string|max:150',
             'description' => 'required',
             'type' => 'required',
@@ -58,25 +68,29 @@ class LearningdetailController extends Controller
             'learninguuid' => 'required'
             
         ]);
-        try { 
-            DB::beginTransaction();  
-            $uuid = Uuid::uuid4();
-            
-             
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'description'=> $request->description,
-                'type'=> $request->type,
-                'urldocument'=> $request->urldocument,
-                'learninguuid'=> $request->learninguuid
-            ];
 
-            $execute = $this->repository->store($data);
+        $user = $this->memberRepository->findbyid($request->useruuid);  
+        if($user->count() < 1){  
+            return $this->error('User Not Found.', [],400);
+        }
+
+        $learning = $this->learningRepository->findbyid($request->learninguuid);  
+        if($learning->count() < 1){  
+            return $this->error('Learning Not Found.', [],400);
+        }
+
+        try { 
+            
+            DB::beginTransaction();  
+            $uuid = Uuid::uuid4(); 
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;   
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Learning details retrieved successfully', $data, 201);
+                return $this->success('Learning details retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Learning details retrieved failure', 400);
             }
@@ -95,17 +109,8 @@ class LearningdetailController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,
-                    'description'=> $execute->description,
-                    'type'=> $execute->type,
-                    'urldocument'=> $execute->urldocument,
-                    'learninguuid'=> $execute->learninguuid
-                ];
-                return $this->success('Learning details retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Learning details retrieved successfully', $execute);
             }else{
                 return $this->error('Learning details Not Found.', [],400);
             } 
@@ -129,7 +134,7 @@ class LearningdetailController extends Controller
     public function update(Request $request)
     {
         //
-        $data = $request->validate([ 
+        $request->validate([ 
             'uuid' =>  'required|string|max:150',
             'useruuid' =>  'required|string|max:150',
             'description' => 'required',
@@ -138,24 +143,27 @@ class LearningdetailController extends Controller
             'learninguuid' => 'required'
         ]);
         //validate
-        $execute = $this->repository->findbyid($request->uuid);  
-            if($execute->count() < 1){  
-                return $this->error('Learning Group Not Found.', [],400);
-            } 
+        $learningdetail = $this->repository->findbyid($request->uuid);  
+        if($learningdetail->count() < 1){  
+            return $this->error('Learning detail Not Found.', [],400);
+        }
+
+        $user = $this->memberRepository->findbyid($request->useruuid);  
+        if($user->count() < 1){  
+            return $this->error('User Not Found.', [],400);
+        }
+
+        $learning = $this->learningRepository->findbyid($request->learninguuid);  
+        if($learning->count() < 1){  
+            return $this->error('Learning Not Found.', [],400);
+        }
 
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'description'=> $request->description,
-                'type'=> $request->type,
-                'urldocument'=> $request->urldocument,
-                'learninguuid'=> $request->learninguuid
-            ];
- 
-                $executes = $this->repository->update($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

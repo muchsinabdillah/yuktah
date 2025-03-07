@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\LearningeventgroupRepositoryInterface;
+use App\Repositories\Interfaces\LearningeventGroupRepositoryInterface;
 
 class LearningeventgroupController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(LearningeventgroupRepositoryInterface $repository)
+    public function __construct(LearningeventGroupRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

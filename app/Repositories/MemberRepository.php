@@ -2,43 +2,38 @@
 
 namespace App\Repositories;
 
-use App\Models\aactivities;
-use App\Models\aprofile;
-use App\Models\member;
+use App\Models\User;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
+use Illuminate\Support\Facades\Hash;
 
 class MemberRepository implements MemberRepositoryInterface
 {
 
     public function all()
     {
-        return member::where('name','1')->latest()->paginate(10);
+        return User::latest()->paginate(10);
     }
 
     public function Store($data)
     {
-        return member::create($data);
+        return User::create($data);
     }
 
     public function findbyid($id)
     {
-        return member::where('uuid',$id)->where('name','1')->get();
+        return User::where('uuid',$id)->get();
     }
 
-     
     public function update($data)
     {
-        $updates = member::where('uuid', $data['uuid'])->update([ 
-            // 'useruuid' => $data['useruuid'], 
-            'name' => $data['name'],
-            'email'=> $data['email'],
-            'address'=> $data['address'],
-            'dateofbirth'=> $data['dateofbirth'],
-            'gender'=> $data['gender'],
-            'education'=> $data['education'],
-            'typeofmember' => $data['typeofmember']
+        $updates = User::where('uuid', $data['uuid'])->update($data);
+        return $updates;
+    } 
+    public function updates($data)
+    {
+        $updates = User::where('uuid', $data['uuid'])->update([
+            'password'=> Hash::make($data['password']) 
         ]);
         return $updates;
     } 
-    
 }

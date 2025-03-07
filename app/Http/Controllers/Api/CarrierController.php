@@ -8,20 +8,50 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\CarrierEducationRepositoryInterface;
+use App\Repositories\Interfaces\CarrierGroupRepositoryInterface;
 use App\Repositories\Interfaces\CarrierRepositoryInterface;
-
+use App\Repositories\Interfaces\CarrierRequirementRepositoryInterface;
+use App\Repositories\Interfaces\CarrierSpecialistRepositoryInterface;
+use App\Repositories\Interfaces\MemberRepositoryInterface;
+use App\Repositories\Interfaces\ProvinceRepositoryInterface;
+use App\Repositories\Interfaces\RegencieRepositoryInterface;
 
 class CarrierController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(CarrierRepositoryInterface $repository)
+    private $memberRepository;
+    private $carrierGroupRepository;
+    private $carrierSpecialistRepository;
+    private $carrierEducationRepository;
+    private $carrierRequirmentRepository;
+    private $provinceRepository;
+    private $regencyRepository;
+
+    public function __construct(
+            CarrierRepositoryInterface $repository,
+            MemberRepositoryInterface $memberRepository,
+            CarrierGroupRepositoryInterface $carrierGroupRepository,
+            CarrierSpecialistRepositoryInterface $carrierSpecialistRepository,
+            CarrierEducationRepositoryInterface $carrierEducationRepository,
+            CarrierRequirementRepositoryInterface $carrierRequirmentRepository,
+            ProvinceRepositoryInterface $provinceRepository,
+            RegencieRepositoryInterface $regencyRepository
+        )
     {
         $this->repository = $repository;
+        $this->memberRepository = $memberRepository;
+        $this->carrierGroupRepository = $carrierGroupRepository;
+        $this->carrierSpecialistRepository = $carrierSpecialistRepository;
+        $this->carrierEducationRepository = $carrierEducationRepository;
+        $this->carrierRequirmentRepository = $carrierRequirmentRepository;
+        $this->provinceRepository = $provinceRepository;
+        $this->regencyRepository = $regencyRepository;
     }
     /**
      * Display a listing of the resource.
-     */
+     */ 
     public function index()
     {
         //
@@ -52,7 +82,7 @@ class CarrierController extends Controller
     public function store(Request $request)
     {
         //+
-        $data = $request->validate([ 
+        $request->validate([ 
             'useruuid' =>  'required|string|max:150',
             'carriergroupuuid' => 'required',
             'industrialuuid' => 'required',
@@ -66,38 +96,25 @@ class CarrierController extends Controller
             'duedate' => 'required',
             'description' => 'required',
             'qualification' => 'required',
-            'status' => 'required'
-
-
+            'status' => 'required'  
         ]);
+
+        // validasi
+        
+
+
         try { 
+
             DB::beginTransaction();  
             $uuid = Uuid::uuid4();
-            
-             
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'carriergroupuuid' => $request->carriergroupuuid, 
-                'industrialuuid'=> $industrialuuid,
-                'educationuuid'=> $educationuuid,
-                'requirmentuuid'=> $requirmentuuid,
-                'companyuuid'=> $companyuuid,
-                'provinceuuid'=> $provinceuuid,
-                'regencyuuid'=> $regencyuuid,
-                'title'=> $title,
-                'personrequirment'=> $personrequirment,
-                'duedate'=> $duedate,
-                'description'=> $description,
-                'qualification'=> $qualification,
-                'status'=> $status
-            ];
-
-            $execute = $this->repository->store($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;  
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Carriers retrieved successfully', $data, 201);
+                return $this->success('Carriers retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Carriers retrieved failure', 400);
             }
@@ -114,28 +131,9 @@ class CarrierController extends Controller
     {
         //
         try {  
-            $execute = $this->repository->findbyid($id)->first();
-             
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'carriergroupuuid' => $execute->carriergroupuuid,
-                    'industrialuuid'=> $execute->industrialuuid,
-                    'educationuuid'=> $execute->educationuuid,
-                    'requirmentuuid'=> $execute->requirmentuuid,
-                    'companyuuid'=> $execute->companyuuid,
-                    'provinceuuid'=> $execute->provinceuuid,
-                    'regencyuuid'=> $execute->regencyuuid,
-                    'title'=> $execute->title,
-                    'personrequirment'=> $execute->personrequirment,
-                    'duedate'=> $execute->duedate,
-                    'description'=> $execute->description,
-                    'qualification'=> $execute->qualification,
-                    'status' => $execute->status
-                ];
-                return $this->success('Carriers retrieved successfully', $data);
+            $execute = $this->repository->findbyid($id)->first(); 
+            if($execute){ 
+                return $this->success('Carriers retrieved successfully', $execute);
             }else{
                 return $this->error('Carriers Not Found.', [],400);
             } 
@@ -185,25 +183,10 @@ class CarrierController extends Controller
         try {
             DB::beginTransaction();  
              
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'carriergroupuuid' => $request->carriergroupuuid,
-                'industrialuuid'=> $request->industrialuuid, 
-                'educationuuid' => $request->educationuuid,
-                'requirmentuuid'=> $request->requirmentuuid, 
-                'companyuuid' => $request->companyuuid,
-                'provinceuuid' => $request->provinceuuid,
-                'regencyuuid' => $request->regencyuuid,
-                'title' => $request->title,
-                'personrequirment'=> $request->personrequirment, 
-                'duedate' => $request->duedate,
-                'description' => $request->description,
-                'qualification' => $request->qualification,
-                'status'  => $request->status
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
  
-                $executes = $this->repository->update($data);
+                $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){

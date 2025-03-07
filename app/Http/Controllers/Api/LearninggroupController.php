@@ -7,13 +7,13 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\LearninggroupRepositoryInterface;
+use App\Repositories\Interfaces\LearningGroupRepositoryInterface;
 
 class LearninggroupController extends Controller
 {
     use ResponseAPI;
     private $repository;
-    public function __construct(LearninggroupRepositoryInterface $repository)
+    public function __construct(LearningGroupRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -45,7 +45,7 @@ class LearninggroupController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage.a
      */
     public function store(Request $request)
     {
@@ -59,17 +59,15 @@ class LearninggroupController extends Controller
             $uuid = Uuid::uuid4();
             
              
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid; 
 
-            $execute = $this->repository->store($data);
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Learning Groups retrieved successfully', $data, 201);
+                return $this->success('Learning Groups retrieved successfully', $dataArray, 201);
             }else{
                 return $this->error('Learning Groups retrieved failure', 400);
             }

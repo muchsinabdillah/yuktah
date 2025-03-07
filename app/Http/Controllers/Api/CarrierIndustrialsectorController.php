@@ -9,12 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\CarrierEducationRepositoryInterface;
+use App\Repositories\Interfaces\CarrierIndustrialsectorRepositoryInterface;
 
 class CarrierIndustrialsectorController extends Controller
 {
       use ResponseAPI;
     private $repository;
-    public function __construct(CarrierEducationRepositoryInterface $repository)
+    public function __construct(CarrierIndustrialsectorRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -27,9 +28,9 @@ class CarrierIndustrialsectorController extends Controller
         try {
             $data =  $this->repository->all(); 
             if($data->count() > 0){ 
-                return $this->success('Carrier Educations retrieved successfully', $data);
+                return $this->success('Carrier Industrial Sector retrieved successfully', $data);
             }else{
-                return $this->error('Carrier Educations Not Found.', [],400);
+                return $this->error('Carrier Industrial Sector Not Found.', [],400);
             } 
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
@@ -60,19 +61,16 @@ class CarrierIndustrialsectorController extends Controller
             $uuid = Uuid::uuid4();
             
              
-            $data = [
-                'uuid' => $uuid,                 
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
-
-            $execute = $this->repository->store($data);
+            $dataArray = []; 
+            $dataArray = $request->toArray();
+            $dataArray['uuid'] = $uuid;  
+            $execute = $this->repository->store($dataArray);
             DB::commit();
             
             if($execute){
-                return $this->success('Carrier Educations retrieved successfully', $data, 201);
+                return $this->success('Carrier Industrial Sector retrieved successfully', $dataArray, 201);
             }else{
-                return $this->error('Carrier Educations retrieved failure', 400);
+                return $this->error('Carrier Industrial Sector retrieved failure', 400);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -89,16 +87,10 @@ class CarrierIndustrialsectorController extends Controller
         try {  
             $execute = $this->repository->findbyid($id)->first();
              
-            if($execute){
-                $data = [
-                    'id' => $execute->id,                 
-                    'uuid' => $execute->uuid, 
-                    'useruuid' => $execute->useruuid,  
-                    'name' => $execute->name 
-                ];
-                return $this->success('Carrier Educations retrieved successfully', $data);
+            if($execute){ 
+                return $this->success('Carrier Industrial Sector retrieved successfully', $execute);
             }else{
-                return $this->error('Carrier Educations Not Found.', [],400);
+                return $this->error('Carrier Industrial Sector Not Found.', [],400);
             } 
         } catch (\Exception $e) {
 
@@ -132,19 +124,14 @@ class CarrierIndustrialsectorController extends Controller
             } 
 
         try {
-            DB::beginTransaction();  
-             
-            $data = [                
-                'uuid' => $request->uuid,  
-                'useruuid' => $request->useruuid,  
-                'name' => $request->name 
-            ];
- 
-                $executes = $this->repository->update($data);
+            DB::beginTransaction(); 
+                $dataArray = []; 
+                $dataArray = $request->toArray(); 
+                $executes = $this->repository->update($dataArray);
            
             DB::commit(); 
             if($executes){
-                return $this->success('Carrier Educations updated successfully', []);
+                return $this->success('Carrier Industrial Sector updated successfully', []);
             } 
         } catch (\Exception $e) {
             DB::rollBack();

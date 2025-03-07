@@ -12,7 +12,7 @@ class MentorRepository implements MentorRepositoryInterface
 
     public function all()
     {
-        return mentor::where('name','tes')->latest()->paginate(10);
+        return mentor::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,23 +22,13 @@ class MentorRepository implements MentorRepositoryInterface
 
     public function findbyid($id)
     {
-        return mentor::where('uuid',$id)->where('name','tes')->get();
+        return mentor::where('uuid',$id)->get();
     }
 
      
     public function update($data)
     {
-        $updates = mentor::where('uuid', $data['uuid'])->update([ 
-            'useruuid' => $data['useruuid'], 
-            'name' => $data['name'],
-            'sex'=> $data['sex'],
-            'address'=> $data['address'],
-            'companyname'=> $data['companyname'],
-            'workpositionuuid'=> $data['workpositionuuid'],
-            'dateofbirth'=> $data['dateofbirth'],
-            'ratingcount'=> $data['ratingcount'],
-            'rating' => $data['rating']
-        ]);
+        $updates = mentor::where('uuid', $data['uuid'])->update($data);
         return $updates;
     } 
     

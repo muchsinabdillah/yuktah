@@ -12,7 +12,7 @@ class LearningeventGroupRepository implements LearningeventGroupRepositoryInterf
 
     public function all()
     {
-        return learningeventgroup::where('name','tes')->latest()->paginate(10);
+        return learningeventgroup::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class LearningeventGroupRepository implements LearningeventGroupRepositoryInterf
 
     public function findbyid($id)
     {
-        return learningeventgroup::where('uuid',$id)->where('name','tes')->get();
+        return learningeventgroup::where('uuid',$id)->get();
     }
 
      

@@ -12,7 +12,7 @@ class CarrierSpecialistRepository implements CarrierSpecialistRepositoryInterfac
 
     public function all()
     {
-        return carrierspecialist::where('name','alim')->latest()->paginate(10);
+        return carrierspecialist::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class CarrierSpecialistRepository implements CarrierSpecialistRepositoryInterfac
 
     public function findbyid($id)
     {
-        return carrierspecialist::where('uuid',$id)->where('name','alim')->get();
+        return carrierspecialist::where('uuid',$id)->get();
     }
 
      

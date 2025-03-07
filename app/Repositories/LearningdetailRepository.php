@@ -12,7 +12,7 @@ class LearningdetailRepository implements LearningdetailRepositoryInterface
 
     public function all()
     {
-        return learningdetail::where('description','tes')->latest()->paginate(10);
+        return learningdetail::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,20 +22,12 @@ class LearningdetailRepository implements LearningdetailRepositoryInterface
 
     public function findbyid($id)
     {
-        return learningdetail::where('uuid',$id)->where('description','tes')->get();
+        return learningdetail::where('uuid',$id)->get();
     }
 
-     
     public function update($data)
     {
-        $updates = learningdetail::where('uuid', $data['uuid'])->update([ 
-            'useruuid' => $data['useruuid'], 
-            'description'=> $data['description'],
-            'type'=> $data['type'],
-            'urldocument'=> $data['urldocument'],
-            'learninguuid'=> $data['learninguuid'],
-            
-        ]);
+        $updates = learningdetail::where('uuid', $data['uuid'])->update($data);
         return $updates;
     } 
     

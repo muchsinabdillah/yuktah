@@ -12,7 +12,7 @@ class LearningRepository implements LearningRepositoryInterface
 
     public function all()
     {
-        return learning::where('title','tes')->latest()->paginate(10);
+        return learning::latest()->paginate(10);
     }
 
     public function Store($data)
@@ -22,7 +22,7 @@ class LearningRepository implements LearningRepositoryInterface
 
     public function findbyid($id)
     {
-        return learning::where('uuid',$id)->where('title','tes')->get();
+        return learning::where('uuid',$id)->get();
     }
 
      
