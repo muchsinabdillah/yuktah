@@ -9,21 +9,21 @@ use App\Http\Controllers\Api\CarrierController;
 use App\Http\Controllers\Api\CompanieController;
 use App\Http\Controllers\Api\LearningController;
 use App\Http\Controllers\Api\ProvinceController;
-use App\Http\Controllers\Api\RegencieController;
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\UserskillController; 
-use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\RegencieController;  
+use App\Http\Controllers\Api\UserskillController;  
 use App\Http\Controllers\Api\CarrierGroupController;
 use App\Http\Controllers\Api\CarrierSkillController;
-use App\Http\Controllers\Api\WorkpositionController;
-use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\LearninggroupController;
+use App\Http\Controllers\Api\WorkpositionController; 
 use App\Http\Controllers\Api\LearningdetailController;
 use App\Http\Controllers\Api\UserspecialistController;
+use App\Http\Controllers\Api\AuthToken\LoginController;
 use App\Http\Controllers\Api\MembereducationController;
 use App\Http\Controllers\api\RatingAppDetailController;
+use App\Http\Controllers\Api\AuthToken\LogoutController;
 use App\Http\Controllers\Api\CarrierEducationController;
 use App\Http\Controllers\Api\CarrierSpecialistController;
+use App\Http\Controllers\Api\AuthToken\RegisterController;
 use App\Http\Controllers\Api\CarrierdetailskillController;
 use App\Http\Controllers\Api\CarrierRequirementController;
 use App\Http\Controllers\Api\LearningeventgroupController;
@@ -40,8 +40,12 @@ use App\Http\Controllers\Api\CarrierIndustrialsectorController;
 
 
  
-Route::post('/login', LoginController::class)->middleware('web'); 
-Route::post('/register', RegisterController::class);
+Route::prefix('auth')->group(function () {
+    Route::post('/login', LoginController::class);
+    Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
+    Route::post('/register', RegisterController::class);
+});
+  
 Route::post('/email/verify/{id}/{hash}', [RegisterController::class,'emailVerify'])->name('verification.verify');
 Route::post('/resend-email-verify', [RegisterController::class,'resendEmailVerificationMail'])->middleware('auth:sanctum');
  

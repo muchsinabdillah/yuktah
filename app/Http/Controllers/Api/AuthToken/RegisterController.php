@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Api\AuthToken;
 
 use App\Models\User;
 use Ramsey\Uuid\Uuid;
@@ -23,7 +23,7 @@ class RegisterController extends Controller
         User::create($dataArray);
         return response()->json([
             'message' => 'Successfully Register',
-            'user' => $dataArray,
+            'user' => $dataArray, 
          ]);
     }
 }

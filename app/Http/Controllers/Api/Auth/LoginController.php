@@ -30,10 +30,5 @@ class LoginController extends Controller
                 'email' => ['The credentials you entered are incorrect.']
             ]);
         }
-
-        return response()->json([
-            'user' => '',
-            'currentToken' =>auth::user()->tokens  
-        ]);
     }
 }

@@ -15,6 +15,7 @@ class LogoutController extends Controller
     {
         auth()->guard('web')->logout();
          
+       
           
     }
 }
