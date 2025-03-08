@@ -57,6 +57,8 @@ use App\Repositories\Interfaces\RatingMentorDetailRepositoryInterface;
 use App\Repositories\RatingAppDetailRepository;
 use App\Repositories\RatingLessonDetailRepository;
 use App\Repositories\RatingMentorDetailRepository;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -101,5 +103,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url){
+            $parts = parse_url($url);
+            $verifyEmailUrl = 'http://localhost:5173/verify-mail?id='
+                . $notifiable->getKey() . '&hash=' .  sha1($notifiable->getEmailForVerification())
+                . '&' . $parts['query'];
+            return (new MailMessage)
+            ->subject('Verify Email Address')
+            ->greeting('Hello '. $notifiable->firstname)
+            ->line('Click the button below to verify your email address.')
+            ->action('Verify Email Address', $verifyEmailUrl)
+            ->line(('If you did not create an account, no furher action is required.'));
+        });
     }
 }

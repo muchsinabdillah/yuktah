@@ -24,10 +24,16 @@ class LoginController extends Controller
         //         'email' => ['The credential you entered are incorect.']
         //     ]);
         //  }
-        if(!Auth::attempt($request->only(['email','password']))){
+        
+        if (!auth()->attempt($request->only(['email', 'password']))) {
             throw ValidationException::withMessages([
-                'email' => ['The credential you entered are incorect.']
+                'email' => ['The credentials you entered are incorrect.']
             ]);
-         }
+        }
+
+        return response()->json([
+            'user' => '',
+            'currentToken' =>auth::user()->tokens  
+        ]);
     }
 }

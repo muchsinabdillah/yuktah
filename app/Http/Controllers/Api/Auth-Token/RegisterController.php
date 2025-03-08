@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Models\User;
+use Ramsey\Uuid\Uuid;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -14,6 +15,15 @@ class RegisterController extends Controller
      */
     public function __invoke(RegisterRequest $request)
     {
-        User::create($request->getData());
+        $uuid = Uuid::uuid4();
+            
+        $dataArray = []; 
+        $dataArray = $request->toArray();
+        $dataArray['uuid'] = $uuid; 
+        User::create($dataArray);
+        return response()->json([
+            'message' => 'Successfully Register',
+            'user' => $dataArray,
+         ]);
     }
 }

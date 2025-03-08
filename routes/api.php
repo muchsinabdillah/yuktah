@@ -1,41 +1,59 @@
 <?php
-
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\LogoutController;
+ 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\MentorController;
+
 use App\Http\Controllers\Api\CarrierController;
 use App\Http\Controllers\Api\CompanieController;
 use App\Http\Controllers\Api\LearningController;
 use App\Http\Controllers\Api\ProvinceController;
 use App\Http\Controllers\Api\RegencieController;
-use App\Http\Controllers\Api\UserskillController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\UserskillController; 
+use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\CarrierGroupController;
 use App\Http\Controllers\Api\CarrierSkillController;
 use App\Http\Controllers\Api\WorkpositionController;
+use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\LearninggroupController;
 use App\Http\Controllers\Api\LearningdetailController;
 use App\Http\Controllers\Api\UserspecialistController;
+use App\Http\Controllers\Api\MembereducationController;
+use App\Http\Controllers\api\RatingAppDetailController;
 use App\Http\Controllers\Api\CarrierEducationController;
 use App\Http\Controllers\Api\CarrierSpecialistController;
 use App\Http\Controllers\Api\CarrierdetailskillController;
 use App\Http\Controllers\Api\CarrierRequirementController;
 use App\Http\Controllers\Api\LearningeventgroupController;
+use App\Http\Controllers\Api\MemberworkhistorieController;
+use App\Http\Controllers\api\RatingLessonDetailController;
+use App\Http\Controllers\api\RatingMentorDetailController;
 use App\Http\Controllers\Api\UserworkexperienceController;
 use App\Http\Controllers\Api\CarrierdetailspecialistController;
 use App\Http\Controllers\Api\CarrierIndustrialsectorController;
-use App\Http\Controllers\Api\MembereducationController;
-use App\Http\Controllers\Api\MemberworkhistorieController;
-use App\Http\Controllers\api\RatingAppDetailController;
-use App\Http\Controllers\api\RatingLessonDetailController;
-use App\Http\Controllers\api\RatingMentorDetailController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+
+
+ 
+Route::post('/login', LoginController::class)->middleware('web'); 
+Route::post('/register', RegisterController::class);
+Route::post('/email/verify/{id}/{hash}', [RegisterController::class,'emailVerify'])->name('verification.verify');
+Route::post('/resend-email-verify', [RegisterController::class,'resendEmailVerificationMail'])->middleware('auth:sanctum');
+ 
+Route::post('/forgot-password', [RegisterController::class,'forgotPassword'])->middleware('web');
+Route::post('/reset-password', [RegisterController::class,'resetPassword'])->middleware('web')->name('password.reset');
+
+
+  
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+ 
 
 Route::middleware('auth:sanctum')->prefix('masterdata')->group(function (){
     Route::group(['prefix' => 'carriergroups/'], function () {
@@ -128,13 +146,7 @@ Route::middleware('auth:sanctum')->prefix('masterdata')->group(function (){
 });
    
      
-// transaction
 
-Route::group(['prefix' => 'auth/'], function () {
-    Route::post("login", [LoginController::class])->middleware('guest');
-    Route::post("logout", [LogoutController::class])->middleware('guest');
-    Route::post("updatepassword", [MemberController::class, "edit"]); 
-});
 
 Route::group(['prefix' => 'mentors/'], function () {
     Route::get("show/all", [MentorController::class, "index"]);

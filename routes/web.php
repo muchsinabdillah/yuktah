@@ -9,10 +9,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+ 
+    Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
+ 
 
-Route::prefix('auth')->group(function () {
-    Route::post('/login', LoginController::class)->middleware('guest');
-    Route::post('/logout', LogoutController::class);
-    Route::post('/register', RegisterController::class);
-});
 
