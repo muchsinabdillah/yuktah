@@ -45,7 +45,7 @@ class LearninggroupController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.a
+     * Store a newly created resource in storage.aaaaaaa
      */
     public function store(Request $request)
     {

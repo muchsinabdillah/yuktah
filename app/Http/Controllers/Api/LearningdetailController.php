@@ -251,7 +251,7 @@ class LearningdetailController extends Controller
                 $image = $request->file('filevideo');
                 // Upload ke S3
                 $path = $image->store('learning/detail/video', 's3'); // 'images' adalah folder di dalam bucket S3
-                // URL file yang sudah di-upload
+                // URL file yang sudah di-uploada
                 $url = Storage::disk('s3')->url($path);     
                 $filevideo =$url.$path;     
             }

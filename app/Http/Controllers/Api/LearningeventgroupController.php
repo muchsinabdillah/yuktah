@@ -18,7 +18,7 @@ class LearningeventgroupController extends Controller
         $this->repository = $repository;
     }
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.aa
      */
     public function index()
     {
