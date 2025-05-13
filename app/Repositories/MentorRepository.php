@@ -24,7 +24,10 @@ class MentorRepository implements MentorRepositoryInterface
     {
         return mentor::where('uuid',$id)->get();
     }
-
+    public function findbyUseruuid($id)
+    {
+        return mentor::where('useruuid',$id)->get();
+    }
      
     public function update($data)
     {

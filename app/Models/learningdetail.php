@@ -20,7 +20,9 @@ class learningdetail extends Model
         'useruuid',
         'description',
         'type',
-        'urldocument',
+        'filedocument', 
+        'filevideo',
+        'jp',
         'learninguuid'
     ];
     

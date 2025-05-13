@@ -20,14 +20,19 @@ class LoginController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if(!$user || !Hash::check($request->password, $user->password)){
-           throw ValidationException::withMessages([
-               'email' => ['The credential you entered are incorect.']
-           ]);
+            return response()->json([
+                'error' => 'The credentials do not match any of our record.',  
+             ]);
         }
-
+        if($user->email_verified_at === null ){
+            return response()->json([
+                'error' => 'Akun anda Belum Verifikasi, Silahkan Cek Email Anda untuk Verifikasi Akun Anda.',  
+             ]);
+        }
         return response()->json([
-           'message' => 'Successfully Login', 
-           'token' => $user->createToken('yuktah_token')->plainTextToken,
+           'user' => $user,
+           'message' => 'Logged in successfully.',
+           'currentToken' => $user->createToken('yuktah_token')->plainTextToken,
         ]);
     }
 }

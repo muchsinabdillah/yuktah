@@ -7,10 +7,12 @@ use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
-use App\Repositories\Interfaces\LearningRepositoryInterface;
+use Illuminate\Support\Facades\Storage;
 use App\Repositories\Interfaces\MemberRepositoryInterface;
-
+use App\Repositories\Interfaces\LearningRepositoryInterface;
+use App\Repositories\Interfaces\LearningdetailRepositoryInterface;
+use Illuminate\Support\Facades\Http; 
+use Illuminate\Support\Facades\Response;
 class LearningdetailController extends Controller
 {
     use ResponseAPI;
@@ -48,9 +50,35 @@ class LearningdetailController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($uuid)
     {
-        //
+        try {
+            $record = $this->repository->findByUuid($uuid)->first();
+
+        if (!$record || !$record->filedocument) {
+            return response()->json(['error' => 'File tidak ditemukan'], 404);
+        }
+            $documentUrl = $record->filedocument;
+
+
+            // Ambil konten dari URL AWS
+            $fileContent = file_get_contents($documentUrl);
+
+            if (!$fileContent) {
+                return response()->json(['error' => 'Gagal mengambil file'], 500);
+            }
+
+             // Ambil nama file dari kolom DB atau URL
+            $filename = $record->filename ?? basename(parse_url($documentUrl, PHP_URL_PATH));
+
+            return response($fileContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            ]);
+                
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
         
     }
 
@@ -63,8 +91,7 @@ class LearningdetailController extends Controller
         $request->validate([ 
             'useruuid' =>  'required|string|max:150',
             'description' => 'required',
-            'type' => 'required',
-            'urldocument' => 'required',
+            'type' => 'required',  
             'learninguuid' => 'required'
             
         ]);
@@ -85,7 +112,31 @@ class LearningdetailController extends Controller
             $uuid = Uuid::uuid4(); 
             $dataArray = []; 
             $dataArray = $request->toArray();
-            $dataArray['uuid'] = $uuid;   
+            $dataArray['uuid'] = $uuid; 
+            
+            $url = 'https://s3.' . env('AWS_DEFAULT_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . '/';
+            $filevideo = $request->youtuberurl;
+            $filedocument= '';
+            if ($request->hasFile('filevideo')) {
+                $image = $request->file('filevideo');
+                // Upload ke S3
+                $path = $image->store('learning/detail/video', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $filevideo ='https://rsuyarsibucket.s3.ap-southeast-1.amazonaws.com/'.$path;     
+            }
+            $dataArray['filevideo'] = $filevideo; 
+
+            if ($request->hasFile('filedocument')) {
+                $image = $request->file('filedocument');
+                // Upload ke S3
+                $path = $image->store('learning/detail/document', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $filedocument ='https://rsuyarsibucket.s3.ap-southeast-1.amazonaws.com/'.$path;     
+            }
+            $dataArray['filedocument'] = $filedocument; 
+            $this->learningRepository->updatemodule($dataArray);
             $execute = $this->repository->store($dataArray);
             DB::commit();
             
@@ -119,13 +170,43 @@ class LearningdetailController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         }
     }
+    public function showuuid(string $uuid)
+    {
+        //
+        try {  
+            $execute = $this->repository->findbyUuid($uuid)->first();
+             
+            if($execute){ 
+                return $this->success('Learning details retrieved successfully', $execute);
+            }else{
+                return $this->error('Learning details Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+
+            return $this->error($e->getMessage(), $e->getCode());
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function showdetailbylearningid(string $id)
     {
-        //
+        try {  
+            $execute = $this->repository->showdetailbylearningid($id);
+             
+            if($execute){ 
+                return $this->success('Learning details retrieved successfully', $execute);
+            }else{
+                return $this->error('Learning details Not Found.', [],400);
+            } 
+
+
+            
+        } catch (\Exception $e) {
+
+            return $this->error($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -138,12 +219,11 @@ class LearningdetailController extends Controller
             'uuid' =>  'required|string|max:150',
             'useruuid' =>  'required|string|max:150',
             'description' => 'required',
-            'type' => 'required',
-            'urldocument' => 'required',
+            'type' => 'required',  
             'learninguuid' => 'required'
         ]);
         //validate
-        $learningdetail = $this->repository->findbyid($request->uuid);  
+        $learningdetail = $this->repository->findbyUuid($request->uuid);  
         if($learningdetail->count() < 1){  
             return $this->error('Learning detail Not Found.', [],400);
         }
@@ -163,6 +243,31 @@ class LearningdetailController extends Controller
              
             $dataArray = []; 
             $dataArray = $request->toArray();
+
+            $url = 'https://s3.' . env('AWS_DEFAULT_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . '/';
+            $filevideo =   $request->youtuberurl;
+            $filedocument= '';
+            if ($request->hasFile('filevideo')) {
+                $image = $request->file('filevideo');
+                // Upload ke S3
+                $path = $image->store('learning/detail/video', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $filevideo =$url.$path;     
+            }
+            $dataArray['filevideo'] = $filevideo; 
+
+            if ($request->hasFile('filedocument')) {
+                $image = $request->file('filedocument');
+                // Upload ke S3
+                $path = $image->store('learning/detail/document', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $filedocument =$url.$path;     
+            }
+            $dataArray['filedocument'] = $filedocument; 
+
+            
             $executes = $this->repository->update($dataArray);
            
             DB::commit(); 

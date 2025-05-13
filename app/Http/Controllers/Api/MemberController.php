@@ -67,6 +67,13 @@ class MemberController extends Controller
             'domicilieaddress' => 'required', 
             'workoutdomicilie' => 'required',
             'typeofmember' => 'required',
+            'nip' => 'required',
+            'dept_id' => 'required',
+            'dept_name' => 'required',
+            'unit_id' => 'required',
+            'unit_name' => 'required',
+            'position_id' => 'required',
+            'position_name' => 'required',
             'password' => 'required' 
         ]);
 
@@ -182,9 +189,82 @@ class MemberController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         } 
     }
+    public function socmed(Request $request)
+    { 
+        $execute = $this->repository->findbyid($request->uuid);  
+            if($execute->count() < 1){  
+                return $this->error('Member Not Found.', [],400);
+            } 
 
+        try {
+            DB::beginTransaction();  
+                $dataArray = []; 
+                $dataArray = $request->toArray();  
+                $executes = $this->repository->socmed($dataArray);
+            DB::commit(); 
+            if($executes){
+                return $this->success('Member Social Media updated successfully', []);
+            } 
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
+    }
+    public function showsocmed(Request $request)
+    {
+        //
+        try {  
+            $execute = $this->repository->showsocmed($request->uuid)->first();
+             
+            if($execute){ 
+                return $this->success('Member Social Media retrieved successfully', $execute);
+            }else{
+                return $this->error('Members Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+
+            return $this->error($e->getMessage(), $e->getCode());
+        }
+    }
+    public function personal(Request $request)
+    { 
+        $execute = $this->repository->findbyid($request->uuid);  
+            if($execute->count() < 1){  
+                return $this->error('Member Not Found.', [],400);
+            } 
+
+        try {
+            DB::beginTransaction();  
+                $dataArray = []; 
+                $dataArray = $request->toArray();  
+                $executes = $this->repository->personal($dataArray);
+            DB::commit(); 
+            if($executes){
+                return $this->success('Member Social Media updated successfully', []);
+            } 
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
+    }
+    public function showPersonalData(Request $request)
+    {
+        //
+        try {  
+            $execute = $this->repository->showPersonalData($request->uuid)->first();
+             
+            if($execute){ 
+                return $this->success('Member Personal data retrieved successfully', $execute);
+            }else{
+                return $this->error('Members Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+
+            return $this->error($e->getMessage(), $e->getCode());
+        }
+    }
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage. 
      */
     public function destroy(string $id)
     {

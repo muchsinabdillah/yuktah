@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('useruuid'); 
             $table->text('description');
             $table->string('type');
-            $table->string('urldocument');
+            $table->string('filedocument');
+            $table->string('filevideo');
             $table->string('learninguuid');
             $table->timestamps();
         });

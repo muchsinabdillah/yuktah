@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\aactivities;
 use App\Models\aprofile;
 use App\Models\learning;
+use App\Models\aactivities;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\Interfaces\LearningRepositoryInterface;
 
 class LearningRepository implements LearningRepositoryInterface
@@ -24,7 +25,11 @@ class LearningRepository implements LearningRepositoryInterface
     {
         return learning::where('uuid',$id)->get();
     }
-
+    public function findbyUuidGroupid($uuid)
+    {
+        
+        return DB::table('v_learningbygroupuuid')->where('uuidgrouplearning',$uuid)->latest()->paginate(10);
+    }
      
     public function update($data)
     {
@@ -40,10 +45,22 @@ class LearningRepository implements LearningRepositoryInterface
             'benefitcourse'=> $data['benefitcourse'], 
             'requirment'=> $data['requirment'], 
             'description'=> $data['description'], 
+            'cover'=> $data['cover'], 
             'price'=> $data['price'], 
+            'place'=> $data['place'], 
+            'learninglevel'=> $data['learninglevel'], 
+            'learningdate' =>  $data['learningdate'], 
+            'contactperson'=> $data['contactperson'], 
+            'gmaplocation'=> $data['gmaplocation'], 
             'status'=> $data['status']
         ]);
         return $updates;
+    } 
+    public function updatemodule($data)
+    {
+        $updates = learning::where('uuid', $data['uuid'])->increment('totalmodul');
+        return $updates;
+ 
     } 
     
 }

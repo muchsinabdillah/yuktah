@@ -11,7 +11,7 @@ class learning extends Model
     protected $table = "learnings";
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass assignable.s
      *
      * @var array<int, string>
      */
@@ -29,6 +29,15 @@ class learning extends Model
         'requirment',
         'description',
         'price',
+        'cover',
+        'totalmodul',
+        'place',
+        'contactperson',
+        'gmaplocation',
+        'learninggroupuuid',
+        'learningeventuuid',
+        'learningdate',
+        'learninglevel',
         'status' 
     ];
     

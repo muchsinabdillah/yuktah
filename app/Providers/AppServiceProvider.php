@@ -51,12 +51,34 @@ use App\Repositories\Interfaces\MemberworkhistorieRepositoryInterface;
 use App\Repositories\Interfaces\UserworkexperienceRepositoryInterface;
 use App\Repositories\Interfaces\CarrierdetailspecialistRepositoryInterface;
 use App\Repositories\Interfaces\CarrierIndustrialsectorRepositoryInterface;
+use App\Repositories\Interfaces\LearningChartRepositoryInterface;
+use App\Repositories\Interfaces\LearningObservationRepositoryInterface;
+use App\Repositories\Interfaces\LearningPracticeRepositoryInterface;
+use App\Repositories\Interfaces\LearningQuestionNairRepositoryInterface;
+use App\Repositories\Interfaces\LearningQuestionRepositoryInterface;
+use App\Repositories\Interfaces\LearningStreamRepositoryInterface;
+use App\Repositories\Interfaces\LearningTransactionRepositoryInterface;
 use App\Repositories\Interfaces\RatingAppDetailRepositoryInterface;
 use App\Repositories\Interfaces\RatingLessonDetailRepositoryInterface;
 use App\Repositories\Interfaces\RatingMentorDetailRepositoryInterface;
+use App\Repositories\Interfaces\TrsLearningKuisionerRepositoryInterface;
+use App\Repositories\Interfaces\TrsLearningObservationRepositoryInterface;
+use App\Repositories\Interfaces\TrsLearningPracticeRepositoryInterface;
+use App\Repositories\Interfaces\TrsLearningQuestionRepositoryInterface;
+use App\Repositories\LearningChartRepository;
+use App\Repositories\LearningObservationRepository;
+use App\Repositories\LearningPracticeRepository;
+use App\Repositories\LearningQuestionNairRepository;
+use App\Repositories\LearningQuestionRepository;
+use App\Repositories\LearningStreamRepository;
+use App\Repositories\LearningTransactionRepository;
 use App\Repositories\RatingAppDetailRepository;
 use App\Repositories\RatingLessonDetailRepository;
 use App\Repositories\RatingMentorDetailRepository;
+use App\Repositories\TrsLearningKuisionerRepository;
+use App\Repositories\TrsLearningObservationRepository;
+use App\Repositories\TrsLearningPracticeRepository;
+use App\Repositories\TrsLearningQuestionRepository;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 
@@ -95,6 +117,18 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RatingAppDetailRepositoryInterface::class, RatingAppDetailRepository::class); 
         $this->app->bind(RatingMentorDetailRepositoryInterface::class, RatingMentorDetailRepository::class); 
         $this->app->bind(RatingLessonDetailRepositoryInterface::class, RatingLessonDetailRepository::class); 
+        $this->app->bind(LearningTransactionRepositoryInterface::class, LearningTransactionRepository::class); 
+        $this->app->bind(LearningChartRepositoryInterface::class, LearningChartRepository::class); 
+        $this->app->bind(LearningStreamRepositoryInterface::class, LearningStreamRepository::class); 
+        $this->app->bind(LearningQuestionRepositoryInterface::class, LearningQuestionRepository::class); 
+        $this->app->bind(LearningQuestionNairRepositoryInterface::class, LearningQuestionNairRepository::class); 
+        $this->app->bind(LearningObservationRepositoryInterface::class, LearningObservationRepository::class); 
+        $this->app->bind(LearningPracticeRepositoryInterface::class, LearningPracticeRepository::class); 
+        $this->app->bind(TrsLearningKuisionerRepositoryInterface::class, TrsLearningKuisionerRepository::class); 
+        $this->app->bind(TrsLearningQuestionRepositoryInterface::class, TrsLearningQuestionRepository::class); 
+        $this->app->bind(TrsLearningPracticeRepositoryInterface::class, TrsLearningPracticeRepository::class); 
+        $this->app->bind(TrsLearningObservationRepositoryInterface::class, TrsLearningObservationRepository::class); 
+        
     }
 
     /**
@@ -105,7 +139,7 @@ class AppServiceProvider extends ServiceProvider
         //
         VerifyEmail::toMailUsing(function (object $notifiable, string $url){
             $parts = parse_url($url);
-            $verifyEmailUrl = 'http://localhost:5173/verify-mail?id='
+            $verifyEmailUrl = 'localhost:5173/verify-mail?id='
                 . $notifiable->getKey() . '&hash=' .  sha1($notifiable->getEmailForVerification())
                 . '&' . $parts['query'];
             return (new MailMessage)

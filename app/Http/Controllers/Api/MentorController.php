@@ -80,6 +80,10 @@ class MentorController extends Controller
         if($user->count() < 1){  
             return $this->error('User Not Found.', [],400);
         } 
+        $user = $this->repository->findbyUseruuid($request->useruuid);  
+        if($user->count() >0 ){  
+            return $this->error('Nama ini sudah terdaftar sebagai Mentor.', [],400);
+        } 
 
 
         try { 
@@ -91,6 +95,7 @@ class MentorController extends Controller
             $dataArray = $request->toArray();
             $dataArray['uuid'] = $uuid; 
             $execute = $this->repository->store($dataArray);
+            $execute = $this->userRepository->updatesprivillageMentor($dataArray);
             DB::commit();
             
             if($execute){

@@ -7,6 +7,7 @@ use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 
 class RegisterController extends Controller
 {
@@ -20,10 +21,12 @@ class RegisterController extends Controller
         $dataArray = []; 
         $dataArray = $request->toArray();
         $dataArray['uuid'] = $uuid; 
-        User::create($dataArray);
+        $user = User::create($dataArray);
+        $user->SendEmailVerificationNotification();
         return response()->json([
             'message' => 'Successfully Register',
             'user' => $dataArray, 
+            '$email' => $user
          ]);
     }
 }

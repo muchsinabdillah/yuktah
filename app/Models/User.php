@@ -43,6 +43,14 @@ class User extends Authenticatable
             'expectedpositionname',
             'workoutdomicilie',
             'typeofmember',
+            'privillage',
+            'nip',
+            'dept_id',
+            'dept_name',
+            'unit_id',
+            'unit_name',
+            'position_id',
+            'position_name',
             'password' 
     ];
 

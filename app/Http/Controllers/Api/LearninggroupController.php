@@ -78,7 +78,7 @@ class LearninggroupController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource.a
      */
     public function show(string $id)
     {

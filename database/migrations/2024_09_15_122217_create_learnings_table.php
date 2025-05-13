@@ -26,6 +26,11 @@ return new class extends Migration
             $table->text('requirment');
             $table->text('description');
             $table->integer('price');
+            $table->integer('totalmodul');
+            $table->text('place');
+            $table->text('contactperson');
+            $table->text('gmaplocation');
+            $table->text('cover');
             $table->string('status');
             $table->timestamps();
         });

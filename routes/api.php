@@ -1,5 +1,6 @@
 <?php
- 
+
+use App\Http\Controllers\Api\Auth\RegisterController as AuthRegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MemberController;
@@ -23,7 +24,7 @@ use App\Http\Controllers\api\RatingAppDetailController;
 use App\Http\Controllers\Api\AuthToken\LogoutController;
 use App\Http\Controllers\Api\CarrierEducationController;
 use App\Http\Controllers\Api\CarrierSpecialistController;
-use App\Http\Controllers\Api\AuthToken\RegisterController;
+use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\CarrierdetailskillController;
 use App\Http\Controllers\Api\CarrierRequirementController;
 use App\Http\Controllers\Api\LearningeventgroupController;
@@ -33,32 +34,39 @@ use App\Http\Controllers\api\RatingMentorDetailController;
 use App\Http\Controllers\Api\UserworkexperienceController;
 use App\Http\Controllers\Api\CarrierdetailspecialistController;
 use App\Http\Controllers\Api\CarrierIndustrialsectorController;
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
-
+use App\Http\Controllers\Api\LearningObservationController;
+use App\Http\Controllers\Api\LearningPracticeController;
+use App\Http\Controllers\Api\LearningQuestionController;
+use App\Http\Controllers\Api\LearningQuestionNairController;
+use App\Http\Controllers\Api\TransactionChartController;
+use App\Http\Controllers\Api\TransactionLearningController;
+use App\Http\Controllers\Api\TransactionLearningStreamController;
+use App\Http\Controllers\Api\TrsLearningKuisionerController;
+use App\Http\Controllers\Api\TrsLearningObservasiController;
+use App\Http\Controllers\Api\TrsLearningPosttestController;
+use App\Http\Controllers\Api\TrsLearningPretestController;
+use App\Http\Controllers\Api\TrsLearningUjiKompetensiController;
  
+
 Route::prefix('auth')->group(function () {
     Route::post('/login', LoginController::class);
     Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
     Route::post('/register', RegisterController::class);
 });
-  
+Route::get('user', function(Request $request) {
+    return [
+        'user' => $request->user(),
+        'currentToken' => $request->bearerToken()
+    ];
+});
+
 Route::post('/email/verify/{id}/{hash}', [RegisterController::class,'emailVerify'])->name('verification.verify');
 Route::post('/resend-email-verify', [RegisterController::class,'resendEmailVerificationMail'])->middleware('auth:sanctum');
+Route::post('/forgot-password', [RegisterController::class,'forgotPassword']);
+Route::post('/reset-password', [RegisterController::class,'resetPassword'])->name('password.reset');
+// Route::post('/reset-password', [RegisterController::class,'resetPassword'])->middleware('web')->name('password.reset');
+
  
-Route::post('/forgot-password', [RegisterController::class,'forgotPassword'])->middleware('web');
-Route::post('/reset-password', [RegisterController::class,'resetPassword'])->middleware('web')->name('password.reset');
-
-
-  
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
- 
-
 Route::middleware('auth:sanctum')->prefix('masterdata')->group(function (){
     Route::group(['prefix' => 'carriergroups/'], function () {
         Route::get("show/all", [CarrierGroupController::class, "index"]);
@@ -147,11 +155,33 @@ Route::middleware('auth:sanctum')->prefix('masterdata')->group(function (){
         Route::post("update", [WorkpositionController::class, "update"]);
         Route::get("show/id/{id}", [WorkpositionController::class, "show"]);
     });
+
+    Route::group(['prefix' => 'learningquestions/'], function () {
+        Route::post("show/all",[LearningQuestionController::class, "index"]);
+        Route::post("create", [LearningQuestionController::class, "store"]);
+        Route::post("update", [LearningQuestionController::class, "update"]);
+        Route::get("show/id/{id}", [LearningQuestionController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningquestionnairs/'], function () {
+        Route::post("show/all",[LearningQuestionNairController::class, "index"]);
+        Route::post("create", [LearningQuestionNairController::class, "store"]);
+        Route::post("update", [LearningQuestionNairController::class, "update"]);
+        Route::get("show/id/{id}", [LearningQuestionNairController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningobservations/'], function () {
+        Route::post("show/all",[LearningObservationController::class, "index"]);
+        Route::post("create", [LearningObservationController::class, "store"]);
+        Route::post("update", [LearningObservationController::class, "update"]);
+        Route::get("show/id/{id}", [LearningObservationController::class, "show"]);
+    });
+    Route::group(['prefix' => 'learningpractices/'], function () {
+        Route::post("show/all",[LearningPracticeController::class, "index"]);
+        Route::post("create", [LearningPracticeController::class, "store"]);
+        Route::post("update", [LearningPracticeController::class, "update"]);
+        Route::get("show/id/{id}", [LearningPracticeController::class, "show"]);
+    });
 });
    
-     
-
-
 Route::group(['prefix' => 'mentors/'], function () {
     Route::get("show/all", [MentorController::class, "index"]);
     Route::post("create", [MentorController::class, "store"]);
@@ -161,9 +191,12 @@ Route::group(['prefix' => 'mentors/'], function () {
 
 Route::group(['prefix' => 'learnings/'], function () {
     Route::get("show/all", [LearningController::class, "index"]);
+    Route::get("show/group/uuid/{uuid}", [LearningController::class, "create"]);
     Route::post("create", [LearningController::class, "store"]);
     Route::post("update", [LearningController::class, "update"]);
     Route::get("show/id/{id}", [LearningController::class, "show"]);
+  
+    
 });
 
 Route::group(['prefix' => 'learningdetails/'], function () {
@@ -171,6 +204,9 @@ Route::group(['prefix' => 'learningdetails/'], function () {
     Route::post("create", [LearningdetailController::class, "store"]);
     Route::post("update", [LearningdetailController::class, "update"]);
     Route::get("show/id/{id}", [LearningdetailController::class, "show"]);
+    Route::get("show/uuid/{id}", [LearningdetailController::class, "showuuid"]);
+    Route::get("show/learningid/{id}", [LearningdetailController::class, "showdetailbylearningid"]);
+    Route::get("file/download/{uuid}", [LearningdetailController::class, "create"]);
 });
 
 // sini
@@ -181,11 +217,20 @@ Route::group(['prefix' => 'carriers/'], function () {
     Route::get("show/id/{id}", [CarrierController::class, "show"]);
 });
 
-Route::group(['prefix' => 'membership/'], function () {
+Route::middleware('auth:sanctum')->prefix('membership')->group(function (){  
    Route::group(['prefix' => 'users/'], function () {
         Route::get("show/all", [MemberController::class, "index"]);
         Route::post("create", [MemberController::class, "store"]); 
+        Route::post("update", [MemberController::class, "edit"]);   
         Route::get("show/id/{id}", [MemberController::class, "show"]);
+        Route::group(['prefix' => 'personal/'], function () {
+            Route::post("update", [MemberController::class, "personal"]); 
+            Route::post("show/id", [MemberController::class, "showPersonalData"]); 
+        });
+        Route::group(['prefix' => 'socmed/'], function () {
+            Route::post("update", [MemberController::class, "socmed"]); 
+            Route::post("show/id", [MemberController::class, "showsocmed"]); 
+        });
    });
 
     Route::group(['prefix' => 'userspecialists/'], function () {
@@ -245,3 +290,79 @@ Route::group(['prefix' => 'rating/'], function () {
     });
     
 });
+
+Route::middleware('auth:sanctum')->prefix('transaction')->group(function (){
+    Route::group(['prefix' => 'charts/'], function () {
+        Route::post("show/all", [TransactionChartController::class, "index"]); 
+        Route::post("create", [TransactionChartController::class, "store"]);
+        Route::post("delete/user", [TransactionChartController::class, "destroy"]); 
+        Route::post("delete/id", [TransactionChartController::class, "destroyuuid"]); 
+    });
+    Route::group(['prefix' => 'checkout/'], function () { 
+        Route::post("create", [TransactionLearningController::class, "store"]); 
+    }); 
+    Route::post("show/user/list/detail", [TransactionLearningController::class, "create"]); 
+
+    // kuisioner, pre,post, uji kompetensi, observasi, result
+    Route::group(['prefix' => 'learningkuisioner/'], function () {
+        Route::post("show/all", [TrsLearningKuisionerController::class, "index"]); 
+        Route::post("create", [TrsLearningKuisionerController::class, "store"]);
+        Route::post("answer", [TrsLearningKuisionerController::class, "update"]);
+        Route::post("final", [TrsLearningKuisionerController::class, "edit"]);
+        Route::post("delete/user", [TrsLearningKuisionerController::class, "destroy"]); 
+        Route::post("delete/id", [TrsLearningKuisionerController::class, "destroyuuid"]); 
+    });
+
+    Route::group(['prefix' => 'pretest/'], function () {
+        Route::post("show/all", [TrsLearningPretestController::class, "index"]); 
+        Route::post("create", [TrsLearningPretestController::class, "store"]);
+        Route::post("answer", [TrsLearningPretestController::class, "update"]);
+        Route::post("final", [TrsLearningPretestController::class, "edit"]);
+        Route::post("delete/user", [TrsLearningPretestController::class, "destroy"]); 
+        Route::post("delete/id", [TrsLearningPretestController::class, "destroyuuid"]); 
+    });
+
+    Route::group(['prefix' => 'posttest/'], function () {
+        Route::post("show/all", [TrsLearningPosttestController::class, "index"]); 
+        Route::post("create", [TrsLearningPosttestController::class, "store"]);
+        Route::post("answer", [TrsLearningPosttestController::class, "update"]);
+        Route::post("final", [TrsLearningPosttestController::class, "edit"]);
+        Route::post("delete/user", [TrsLearningPosttestController::class, "destroy"]); 
+        Route::post("delete/id", [TrsLearningPosttestController::class, "destroyuuid"]); 
+    });
+
+    Route::group(['prefix' => 'ujikompetensi/'], function () {
+        Route::post("show/all", [TrsLearningUjiKompetensiController::class, "index"]); 
+        Route::post("create", [TrsLearningUjiKompetensiController::class, "store"]);
+        Route::post("final", [TrsLearningUjiKompetensiController::class, "edit"]);
+        Route::post("answer", [TrsLearningUjiKompetensiController::class, "update"]);
+        Route::post("delete/user", [TrsLearningUjiKompetensiController::class, "destroy"]); 
+        Route::post("delete/id", [TrsLearningUjiKompetensiController::class, "destroyuuid"]); 
+    });
+
+    Route::group(['prefix' => 'observasi/'], function () {
+        Route::post("show/all", [TrsLearningObservasiController::class, "index"]); 
+        Route::post("create", [TrsLearningObservasiController::class, "store"]);
+        Route::post("final", [TrsLearningObservasiController::class, "edit"]);
+        Route::post("answer", [TrsLearningObservasiController::class, "update"]);
+        Route::post("delete/user", [TrsLearningObservasiController::class, "destroy"]); 
+        Route::post("delete/id", [TrsLearningObservasiController::class, "destroyuuid"]); 
+    });
+
+});
+
+Route::middleware('auth:sanctum')->prefix('stream')->group(function (){
+     
+    Route::post("learning", [TransactionLearningStreamController::class, "store"]); 
+    Route::post("show/user/list", [TransactionLearningStreamController::class, "index"]); 
+    Route::post("show/user/listmoduldetail", [TransactionLearningStreamController::class, "listmoduldetail"]); 
+    Route::post("show/learningid", [TransactionLearningStreamController::class, "create"]);
+    Route::post("show/module/user/list/id", [TransactionLearningStreamController::class, "show"]);
+    Route::get("cert", [TransactionLearningStreamController::class, "update"]);
+    Route::get("certificate/generate/{id}/{learninguuid}", [TransactionLearningStreamController::class, "update"]);
+    // Route::post("show/user/list/detail", [TransactionLearningStreamController::class, "create"]); 
+
+});
+
+Route::get("cert/{aa}", [TransactionLearningStreamController::class, "update"]);
+  

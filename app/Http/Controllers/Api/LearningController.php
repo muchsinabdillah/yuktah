@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 use Ramsey\Uuid\Uuid;
-use App\Traits\ResponseAPI;
+use App\Traits\AwsTrait;
  
+use App\Traits\ResponseAPI;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Repositories\Interfaces\LearningRepositoryInterface;
+use Illuminate\Support\Facades\Storage;
 use App\Repositories\Interfaces\MentorRepositoryInterface;
+use App\Repositories\Interfaces\LearningRepositoryInterface;
 
 class LearningController extends Controller
 {
     use ResponseAPI;
+    use AwsTrait;
     private $repository;
     private $mentorRepsitory;
     private $userRepository;
@@ -43,10 +46,19 @@ class LearningController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($uuid)
     {
         //
-        
+        try {
+            $data =  $this->repository->findbyUuidGroupid($uuid); 
+            if($data->count() > 0){ 
+                return $this->success('Learnings retrieved successfully', $data);
+            }else{
+                return $this->error('Learnings Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
     }
 
     /**
@@ -66,14 +78,20 @@ class LearningController extends Controller
             'benefitcourse' => 'required',
             'requirment' => 'required',
             'description' => 'required',
-            'price' => 'required',
+            'price' => 'required', 
+            'learninglevel' => 'required',
+            'learningdate' => 'required',
+            'learningeventuuid' => 'required',
+            'learninggroupuuid' => 'required',
+            'file' => 'required',
             'status' => 'required'
 
         ]);
-        $mentor = $this->mentorRepsitory->findbyid($request->mentoruuid);  
-        if($mentor->count() < 1){  
-            return $this->error('Mentor Not Found.', [],400);
-        }
+
+        // $mentor = $this->mentorRepsitory->findbyUseruuid($request->mentoruuid);  
+        // if($mentor->count() < 1){  
+        //     return $this->error('Mentor Not Found.', [],400);
+        // }
 
         try { 
             DB::beginTransaction();  
@@ -81,6 +99,18 @@ class LearningController extends Controller
             $dataArray = []; 
             $dataArray = $request->toArray();
             $dataArray['uuid'] = $uuid;  
+
+            $url = 'https://s3.' . env('AWS_DEFAULT_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . '/';
+            $fileaws = '';
+            if ($request->hasFile('file')) {
+                $image = $request->file('file');
+                // Upload ke S3
+                $path = $image->store('learning', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $fileaws ='https://rsuyarsibucket.s3.ap-southeast-1.amazonaws.com/'.$path;     
+            }
+            $dataArray['cover'] = $fileaws; 
             $execute = $this->repository->store($dataArray);
             DB::commit();
             
@@ -140,8 +170,11 @@ class LearningController extends Controller
             'learndetail' => 'required',
             'benefitcourse' => 'required',
             'requirment' => 'required',
-            'description' => 'required',
+            'description' => 'required', 
+            'learninglevel' => 'required',
             'price' => 'required',
+            'file' => 'required',
+            'learningdate' => 'required',
             'status' => 'required'
         ]);
         //validate
@@ -150,16 +183,29 @@ class LearningController extends Controller
                 return $this->error('Learning Not Found.', [],400);
             } 
 
-        $mentor = $this->mentorRepsitory->findbyid($request->mentoruuid);  
-            if($mentor->count() < 1){  
-                return $this->error('Mentor Not Found.', [],400);
-            }
+        // $mentor = $this->mentorRepsitory->findbyUseruuid($request->mentoruuid);  
+        //     if($mentor->count() < 1){  
+        //         return $this->error('Mentor Not Found.', [],400);
+        //     }
 
         try {
             DB::beginTransaction();  
              
             $dataArray = []; 
             $dataArray = $request->toArray();
+
+            $url = 'https://s3.' . env('AWS_DEFAULT_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . '/';
+            $fileaws = '';
+            if ($request->hasFile('file')) {
+                $image = $request->file('file');
+                // Upload ke S3
+                $path = $image->store('learning', 's3'); // 'images' adalah folder di dalam bucket S3
+                // URL file yang sudah di-upload
+                $url = Storage::disk('s3')->url($path);     
+                $fileaws =$url.$path;     
+            }
+            $dataArray['cover'] = $fileaws; 
+
             $executes = $this->repository->update($dataArray);
            
             DB::commit(); 

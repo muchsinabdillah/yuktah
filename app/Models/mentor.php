@@ -18,6 +18,7 @@ class mentor extends Model
     protected $fillable = [
         'uuid',     
         'mentoruuid',
+        'useruuid',
         'name',
         'sex',
         'address',
