@@ -91,5 +91,25 @@ class LearningStreamRepository implements LearningStreamRepositoryInterface
         $updates = DB::table('v_learningstreammodullist')->where('useruuid',$useruuid)->latest()->paginate(10);
         return $updates;
     }
-    
+    public function updateCert($uuid,$certvalidate,$cert,$certurl)
+    {
+        $updates = transactionlearningstreamdetail::where('uuid', $uuid)->update([ 
+            'certvalidate' => $certvalidate, 
+            'cert'=> $cert, 
+            'certurl'=> $certurl
+        ]);
+        return $updates;
+    } 
+    public function validatecertificatebyuuidStreamdetail($uuid)
+    {
+        return  DB::table('v_validatecertificate') 
+                ->where('certvalidate',$uuid)
+                ->get();
+    }
+    public function finddetailstreamModulbyUuid($uuid)
+    {
+        
+        $updates = DB::table('v_learningstreammodullist')->where('uuid',$uuid)->get();
+        return $updates;
+    }
 }

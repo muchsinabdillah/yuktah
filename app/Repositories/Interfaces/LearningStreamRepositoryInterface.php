@@ -13,6 +13,8 @@ Interface LearningStreamRepositoryInterface{
     public function findbyLearningStreamId($uuid);
     public function findbyLearningStreambyDetailUuid($uuid);
     public function findbyLearningModuleListbyId($data);  
-    
+    public function updateCert($uuid,$certvalidate,$cert,$certurl);
+    public function validatecertificatebyuuidStreamdetail($uuid);
+    public function finddetailstreamModulbyUuid($uuid);
     
 }

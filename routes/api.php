@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\LearningObservationController;
 use App\Http\Controllers\Api\LearningPracticeController;
 use App\Http\Controllers\Api\LearningQuestionController;
 use App\Http\Controllers\Api\LearningQuestionNairController;
+use App\Http\Controllers\Api\ReportingLearningController;
 use App\Http\Controllers\Api\TransactionChartController;
 use App\Http\Controllers\Api\TransactionLearningController;
 use App\Http\Controllers\Api\TransactionLearningStreamController;
@@ -358,10 +359,18 @@ Route::middleware('auth:sanctum')->prefix('stream')->group(function (){
     Route::post("show/user/listmoduldetail", [TransactionLearningStreamController::class, "listmoduldetail"]); 
     Route::post("show/learningid", [TransactionLearningStreamController::class, "create"]);
     Route::post("show/module/user/list/id", [TransactionLearningStreamController::class, "show"]);
+    Route::get("certificates/validate/{uuid}", [TransactionLearningStreamController::class, "edit"]);
     Route::get("cert", [TransactionLearningStreamController::class, "update"]);
+    Route::get("show/byuuidstreamdetail/{uuid}", [TransactionLearningStreamController::class, "destroy"]);
     Route::get("certificate/generate/{id}/{learninguuid}", [TransactionLearningStreamController::class, "update"]);
     // Route::post("show/user/list/detail", [TransactionLearningStreamController::class, "create"]); 
 
+});
+
+Route::middleware('auth:sanctum')->prefix('reporting')->group(function (){
+    Route::middleware('auth:sanctum')->prefix('learning')->group(function (){
+        Route::get("all/employees", [ReportingLearningController::class, "index"]); 
+    });
 });
 
 Route::get("cert/{aa}", [TransactionLearningStreamController::class, "update"]);

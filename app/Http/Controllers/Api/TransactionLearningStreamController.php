@@ -15,7 +15,8 @@ use App\Repositories\Interfaces\LearningStreamRepositoryInterface;
 use App\Repositories\Interfaces\LearningTransactionRepositoryInterface;
 use setasign\Fpdi\Fpdi;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 class TransactionLearningStreamController extends Controller
 {
     use ResponseAPI;
@@ -167,36 +168,66 @@ class TransactionLearningStreamController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $uuid)
     {
-        //
+         try { 
+            $data = $this->repositoryStream->validatecertificatebyuuidStreamdetail($uuid); 
+            if($data->count() > 0){ 
+                return $this->success('Data retrieved successfully', $data->first());
+            }else{
+                return $this->error('Data Transaction Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $e->getCode());
+        } 
     }
 
     /**
      * Update the specified resource in storage.
      */
+     
     public function update($uuid,$learninguuid)
     {
         //
 
         $record = $this->repositoryLearningDetail->findDataLearningCertbyUuid($learninguuid)->first();
         $stream = $this->repositoryStream->findbyLearningStreambyDetailUuid($uuid)->first();
-    
-         
-
+       
+          
         $name ="Mochamad Muchsin Abdillah"; 
-        $credential =  "22";
-
+        
+        $randomString = Str::random(9);
+        $idmodul = $record->idmodul;
+        $learningdate = date("Y", strtotime($record->learningdate));
+        $idpembelajaran = $record->idpembelajaran;
+        $idmateri = $record->idmateri; 
+        $certnumber = Str::upper($randomString).'/'.$idmodul.'/'.$idpembelajaran.'/'.$idmateri.'/DIKLIT-RSY/'.$learningdate; //randomstring/modul/pembelajaran/materi/DIKLIT-RSY/2025
         //generate qr code
+        $credential =  Str::upper($randomString);
         $qrCode = QrCode::format('png')->size(500)->generate($credential);
         $qrCodePath = public_path('qr/'.$credential.'.png'); 
         $logopathhub = public_path('img/hub.png');
         $signyarsi = public_path('img/ceoyarsi.png');
+        $LogoGabungCert = public_path('img/LogoGabungCert.png');
         $signhub = public_path('img/ceo360.png');
         file_put_contents($qrCodePath,$qrCode);
 
         // create instance PDF
         $pdf = new Fpdi();
+
+        if($stream->certvalidate <> "" || $stream->certvalidate <> null){
+                 $url = 'https://rsuyarsibucket.s3.ap-southeast-1.amazonaws.com';
+            $filePath = $url.$stream->certurl;
+            // Ambil isi file PDF sebagai binary (blob)
+            $pdfContent = file_get_contents($filePath);
+
+            $fileName = $stream->certvalidate.'.pdf';
+             
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            ]);
+        }
 
         $pathTemplate = public_path().'/certificate/cert.pdf';
         $pdf->setSourceFile($pathTemplate);
@@ -209,6 +240,16 @@ class TransactionLearningStreamController extends Controller
  
  
         // Set posisi dan tulis 
+
+        $pdf->SetFont('Helvetica', '', 5);
+        $text = $certnumber;
+        $pageWidth = $pdf->GetPageWidth();
+        $textWidth = $pdf->GetStringWidth($text);
+        $x = ($pageWidth - $textWidth) / 2;
+        $pdf->SetXY(11, 17); // Y tetap di 129
+        $pdf->Write(0, $text);
+
+
         $pdf->SetFont('Helvetica', 'B', 25);
         $text = $name;
         $pageWidth = $pdf->GetPageWidth();
@@ -238,7 +279,7 @@ class TransactionLearningStreamController extends Controller
  
 
         $pdf->SetFont('Helvetica', '', 10);
-        $text = '( 8 Jam Pembelajaran )';
+        $text = $stream->jp;
         $pageWidth = $pdf->GetPageWidth();
         $textWidth = $pdf->GetStringWidth($text);
         $x = ($pageWidth - $textWidth) / 2;
@@ -304,19 +345,20 @@ class TransactionLearningStreamController extends Controller
         $pdf->setXY(110,206);
         $pdf->Write(0,$stream->finalscore); // Avg. Score
 
-        $pdf->Image($qrCodePath,140,30,30,30); 
-        $pdf->Image($logopathhub,233,10,60,50); 
-        $pdf->Image($signhub,100,210,40,40); 
-
-        $fileName = 'Certificate - '.$name.'.pdf';
-        // return response()->make($pdf->Output('S',$fileName),$fileName,[
-        //     'Content-Type'=>'application/pdf',
-        //     'Content-Disposition'=>'attachment; fileName="'.$fileName.'"'
-        // ]);
-
-
+        $pdf->Image($qrCodePath,115,215,20,20); 
+        $pdf->Image($logopathhub,233,10,60,50);  
+   
+        $uuidcert = UUid::uuid4();
+        $fileName = $uuidcert.'.pdf';
         $pdfContent = $pdf->Output('S'); // 'S' = return as string, bukan langsung output
 
+        //upload to aws
+        $s3Path = 'certificate/'.$fileName;
+        Storage::disk('s3')->put($s3Path, $pdfContent, 'public'); 
+        $s3Url = Storage::disk('s3')->url($s3Path);
+        $this->repositoryStream->updateCert($uuid,$uuidcert,$certnumber,$s3Url);
+
+        // upload to aws
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
@@ -326,8 +368,17 @@ class TransactionLearningStreamController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $uuid)
     {
-        //
+       try {
+            $data =  $this->repositoryStream->finddetailstreamModulbyUuid($uuid); 
+            if($data->count() > 0){ 
+                return $this->success('Data retrieved successfully', $data->first());
+            }else{
+                return $this->error('Data Transaction Not Found.', [],400);
+            } 
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $e->getCode());
+        }    
     }
 }

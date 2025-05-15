@@ -61,6 +61,7 @@ use App\Repositories\Interfaces\LearningTransactionRepositoryInterface;
 use App\Repositories\Interfaces\RatingAppDetailRepositoryInterface;
 use App\Repositories\Interfaces\RatingLessonDetailRepositoryInterface;
 use App\Repositories\Interfaces\RatingMentorDetailRepositoryInterface;
+use App\Repositories\Interfaces\ReportingLearningRepositoryInterface;
 use App\Repositories\Interfaces\TrsLearningKuisionerRepositoryInterface;
 use App\Repositories\Interfaces\TrsLearningObservationRepositoryInterface;
 use App\Repositories\Interfaces\TrsLearningPracticeRepositoryInterface;
@@ -75,6 +76,7 @@ use App\Repositories\LearningTransactionRepository;
 use App\Repositories\RatingAppDetailRepository;
 use App\Repositories\RatingLessonDetailRepository;
 use App\Repositories\RatingMentorDetailRepository;
+use App\Repositories\ReportingLearningRepository;
 use App\Repositories\TrsLearningKuisionerRepository;
 use App\Repositories\TrsLearningObservationRepository;
 use App\Repositories\TrsLearningPracticeRepository;
@@ -128,6 +130,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TrsLearningQuestionRepositoryInterface::class, TrsLearningQuestionRepository::class); 
         $this->app->bind(TrsLearningPracticeRepositoryInterface::class, TrsLearningPracticeRepository::class); 
         $this->app->bind(TrsLearningObservationRepositoryInterface::class, TrsLearningObservationRepository::class); 
+        $this->app->bind(ReportingLearningRepositoryInterface::class, ReportingLearningRepository::class); 
         
     }
 
@@ -136,10 +139,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+         
         VerifyEmail::toMailUsing(function (object $notifiable, string $url){
             $parts = parse_url($url);
-            $verifyEmailUrl = 'localhost:5173/verify-mail?id='
+            $verifyEmailUrl = env('FRONTEND_URL') . '/verify-mail?id='
                 . $notifiable->getKey() . '&hash=' .  sha1($notifiable->getEmailForVerification())
                 . '&' . $parts['query'];
             return (new MailMessage)

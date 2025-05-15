@@ -25,6 +25,9 @@ class transactionlearningstreamdetail extends Model
         'jp',
         'learningdetailuuid',
         'streamuuid',
+        'certvalidate',
+        'cert',
+        'certurl',
         'isfinish' 
     ];
     
